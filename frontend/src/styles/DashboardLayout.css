@@ -1,0 +1,16 @@
+.dashboardLayout {
+    background: #f7f9fc;
+}
+
+.dashboardMain {
+    margin-left: 260px;
+}
+
+@media (max-width: 1024px) {
+    .dashboardMain { margin-left: 220px; }
+}
+
+@media (max-width: 768px) {
+    .dashboardLayout { display: block; }
+    .dashboardMain { margin-left: 0; }
+}

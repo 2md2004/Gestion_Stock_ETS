@@ -1,0 +1,139 @@
+.topbar {
+    height: 72px;
+    border-color: #e2e8f0 !important;
+}
+
+.topbarTitle {
+    font-size: 20px;
+    color: #002050;
+}
+
+.topbarSubtitle {
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* Recherche */
+.topbarSearch {
+    max-width: 420px;
+    height: 40px;
+    border-color: #e2e8f0 !important;
+}
+
+.topbarSearch svg {
+    width: 18px;
+    height: 18px;
+    fill: #94a3b8;
+}
+
+.topbarSearch input {
+    font-size: 13px;
+    color: #334155;
+}
+
+.topbarSearch input:focus {
+    box-shadow: none;
+}
+
+/* Date */
+.topbarDate {
+    height: 38px;
+    font-size: 12px;
+}
+
+.topbarDate svg {
+    width: 16px;
+    height: 16px;
+    fill: #D09018;
+}
+
+/* Notification */
+.notification {
+    width: 38px;
+    height: 38px;
+}
+
+.notification svg {
+    width: 19px;
+    height: 19px;
+    fill: #002050;
+}
+
+.notification .badge {
+    background: #D09018;
+    color: white;
+    font-size: 10px;
+    padding: 4px 5px;
+}
+
+/* Profil */
+.profileButton {
+    height: 44px;
+    border-color: #e2e8f0 !important;
+}
+
+.profileAvatar {
+    width: 34px;
+    height: 34px;
+    background: #002050;
+    color: white;
+    font-size: 12px;
+}
+
+.profileInfo strong {
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.profileInfo small {
+    font-size: 11px;
+}
+
+.profileChevron {
+    width: 15px;
+    height: 15px;
+    fill: #64748b;
+    transition: 0.2s;
+}
+
+.profileChevron.rotate {
+    transform: rotate(180deg);
+}
+
+/* Menu profil */
+.profileMenu {
+    top: 52px;
+    width: 230px;
+    border-color: #e2e8f0 !important;
+    z-index: 200;
+}
+
+.profileMenu button {
+    height: 38px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.profileMenu button:hover {
+    background: #f7f9fc;
+}
+
+.profileMenu svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+}
+
+.profileMenu .danger {
+    color: #c53030;
+}
+
+.profileMenu .danger:hover {
+    background: #fff5f5;
+}
+
+@media (max-width: 600px) {
+    .topbar { padding: 0 15px; }
+    .topbarTitle { font-size: 17px; }
+}

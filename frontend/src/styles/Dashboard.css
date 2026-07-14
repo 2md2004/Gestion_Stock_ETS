@@ -1,0 +1,62 @@
+/* Cartes stats */
+.statCard {
+    border-color: #e2e8f0 !important;
+    transition: 0.25s;
+}
+
+.statCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 32, 80, 0.08);
+}
+
+.statIcon {
+    width: 40px;
+    height: 40px;
+}
+
+.statIcon svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.statIcon.navy { background: #002050; }
+.statIcon.gold { background: #D09018; }
+
+.statContent h3 { font-size: 22px; color: #002050; }
+.statContent span, .statContent small { font-size: 12px; }
+
+.statTrend {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.statTrend.up { color: #17803d; }
+.statTrend.down { color: #d33c3c; }
+.statTrend.neutral { color: #94a3b8; }
+
+/* Panels */
+.panel { border-color: #e2e8f0 !important; }
+.panelHeader h3 { color: #002050; font-size: 17px; }
+
+/* Alertes */
+.stockAlert { background: #f8fafc; }
+.stockAlert strong { color: #334155; font-size: 14px; }
+.stockAlert span { color: #d09018; font-size: 13px; }
+
+/* Top produits */
+.topProductCard { background: #f8fafc; }
+
+.topProductRank {
+    width: 32px;
+    height: 32px;
+    background: #002050;
+    color: white;
+    font-size: 13px;
+}
+
+.topProductAmount {
+    color: #d09018;
+    font-size: 13px;
+    margin-top: 2px;
+}
