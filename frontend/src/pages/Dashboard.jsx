@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -8,6 +9,8 @@ import {
   Tooltip,
 } from 'recharts'
 import '../styles/Dashboard.css'
+import { getStatitisques } from '../services/DashboardService';
+import { ClipLoader } from "react-spinners";
 
 const salesData = [
   { day: 'Lun', ventes: 120000 },
@@ -19,45 +22,6 @@ const salesData = [
   { day: 'Dim', ventes: 190000 },
 ]
 
-const stats = [
-  {
-    title: 'Produits',
-    value: '245',
-    subtitle: 'Références',
-    color: 'navy',
-    trend: '+8% ce mois',
-    trendTone: 'up',
-    icon: <path d="M12 2L3 7l9 5 9-5-9-5zm0 7L3 4v13l9 5 9-5V4l-9 5z" />,
-  },
-  {
-    title: 'Valeur du stock',
-    value: '2 450 000',
-    subtitle: 'FCFA',
-    color: 'gold',
-    trend: 'Stable',
-    trendTone: 'neutral',
-    icon: <path d="M12 2L4 6v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V6l-8-4z" />,
-  },
-  {
-    title: 'Ventes du jour',
-    value: '350 000',
-    subtitle: 'FCFA',
-    color: 'navy',
-    trend: '+12% vs hier',
-    trendTone: 'up',
-    icon: <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM3 2l2 12h13l2-8H6" />,
-  },
-  {
-    title: 'Alertes',
-    value: '5',
-    subtitle: 'Stock faible',
-    color: 'gold',
-    trend: '+2 vs hier',
-    trendTone: 'down',
-    icon: <path d="M12 2L1 21h22L12 2zm0 6v6m0 4h.01" />,
-  },
-]
-
 const topProducts = [
   { rank: 1, name: 'Ciment 50 kg', quantity: 148, amount: '740 000 FCFA' },
   { rank: 2, name: 'Fer 12', quantity: 96, amount: '576 000 FCFA' },
@@ -65,16 +29,132 @@ const topProducts = [
 ]
 
 const Dashboard = () => {
+  const [stats, setStats] = useState({
+    totalProduits: 0,
+    totalCategories: 0,
+    stockFaible: 0,
+    nbreVentesDuJour: 0,
+    valeurStock: 0,
+    beneficeMois: 0,
+    chiffreAffaireAnnee: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        const data = await getStatitisques();
+        setStats(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des statistiques:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const statCards = [
+    {
+      title: 'Produits',
+      value: stats.totalProduits || 0,
+      subtitle: 'Références',
+      color: '#4A90D9',
+      bgColor: '#E8F0FE',
+      trend: '+8% ce mois',
+      trendTone: 'up',
+      icon: 'bi bi-box-seam',
+    },
+    {
+      title: 'Valeur du stock',
+      value: stats.valeurStock ? stats.valeurStock.toLocaleString() : '0',
+      subtitle: 'FCFA',
+      color: '#2ECC71',
+      bgColor: '#E8F8F0',
+      trend: 'Stable',
+      trendTone: 'neutral',
+      icon: 'bi bi-cash-stack',
+    },
+    {
+      title: 'Ventes du jour',
+      value: stats.nbreVentesDuJour || 0,
+      subtitle: 'Ventes',
+      color: '#E74C3C',
+      bgColor: '#FDE8E8',
+      trend: '+12% vs hier',
+      trendTone: 'up',
+      icon: 'bi bi-cart',
+    },
+    {
+      title: 'Alertes stock',
+      value: stats.stockFaible || 0,
+      subtitle: 'Stock faible',
+      color: '#F39C12',
+      bgColor: '#FEF5E7',
+      trend: '+2 vs hier',
+      trendTone: 'down',
+      icon: 'bi bi-exclamation-triangle',
+    },
+    {
+      title: 'Total Catégories',
+      value: stats.totalCategories || 0,
+      subtitle: 'Catégories',
+      color: '#9B59B6',
+      bgColor: '#F4ECF7',
+      trend: '+2 nouvelles',
+      trendTone: 'up',
+      icon: 'bi bi-tags',
+    },
+    {
+      title: 'Bénéfice du mois',
+      value: stats.beneficeMois ? stats.beneficeMois.toLocaleString() : '0',
+      subtitle: 'FCFA',
+      color: '#1ABC9C',
+      bgColor: '#E8F8F5',
+      trend: '+15% vs mois dernier',
+      trendTone: 'up',
+      icon: 'bi bi-graph-up-arrow',
+    },
+    {
+      title: "Chiffre d'affaires",
+      value: stats.chiffreAffaireAnnee ? stats.chiffreAffaireAnnee.toLocaleString() : '0',
+      subtitle: 'FCFA / Année',
+      color: '#E67E22',
+      bgColor: '#FDF2E9',
+      trend: '+22% vs année dernière',
+      trendTone: 'up',
+      icon: 'bi bi-bar-chart-line',
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="d-flex flex-column justify-content-center align-items-center gap-3" style={{ height: "60vh" }}>
+        <ClipLoader color="#002050" loading={loading} size={60} />
+        <p>Chargement des statistiques...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboardPage d-flex flex-column gap-4">
-      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-        {stats.map((item) => (
+      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
+        {statCards.map((item) => (
           <div className="col" key={item.title}>
             <div className="statCard bg-white border rounded-4 p-3 h-100">
-              <div className={`statIcon ${item.color} rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 mb-2`}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  {item.icon}
-                </svg>
+              <div 
+                className="statIcon rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 mb-2"
+                style={{ 
+                  backgroundColor: item.bgColor,
+                  color: item.color,
+                  width: '48px',
+                  height: '48px'
+                }}
+              >
+                <i className={`${item.icon} fs-4`}></i>
               </div>
 
               <div className="statContent d-flex flex-column">

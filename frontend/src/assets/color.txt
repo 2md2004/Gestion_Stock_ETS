@@ -1,0 +1,14 @@
+Bleu marine
+
+HEX : #002050
+RGB : 0, 32, 80
+
+Doré / Or
+
+HEX : #D09018
+RGB : 208, 144, 24
+
+Blanc (fond)
+
+HEX : #FFFFFF
+RGB : 255, 255, 255

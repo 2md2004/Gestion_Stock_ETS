@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
     private final UtilisateurRepository utilisateurRepository;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

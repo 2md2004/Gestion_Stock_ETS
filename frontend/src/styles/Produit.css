@@ -1,0 +1,17 @@
+.page-item.active .page-link {
+    background-color: #D09018 !important;
+    border-color: #D09018 !important;
+    color: white !important;
+}
+
+.page-link {
+    color: #D09018;
+}
+
+.page-link:hover {
+    color: #002050;
+}
+
+.page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(62, 44, 28, 0.25);
+}

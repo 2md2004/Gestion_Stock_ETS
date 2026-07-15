@@ -16,6 +16,7 @@ public class Produit {
     private String id;
     @Column(length = 30)
     private String nom;
+    @Column(length = 255)
     private String description;
     private BigDecimal prixAchat;
     private BigDecimal prixVente;

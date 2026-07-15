@@ -41,7 +41,7 @@ const Topbar = ({
       </div>
 
       {/* RECHERCHE */}
-      <div className="topbarSearch d-none d-md-flex align-items-center gap-2 bg-light border rounded-3 px-3 flex-grow-1">
+      {/* <div className="topbarSearch d-none d-md-flex align-items-center gap-2 bg-light border rounded-3 px-3 flex-grow-1">
         <svg viewBox="0 0 24 24" className="flex-shrink-0">
           <path d="M10 2a8 8 0 105.3 14l5 5 1.4-1.4-5-5A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z" />
         </svg>
@@ -50,7 +50,7 @@ const Topbar = ({
           className="form-control form-control-sm border-0 bg-transparent shadow-none px-0"
           placeholder="Rechercher un produit..."
         />
-      </div>
+      </div> */}
 
       {/* DROITE */}
       <div className="topbarRight d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">

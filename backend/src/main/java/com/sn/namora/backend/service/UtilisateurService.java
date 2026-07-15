@@ -1,8 +1,11 @@
 package com.sn.namora.backend.service;
 
+import com.sn.namora.backend.dto.request.ResetRequest;
 import com.sn.namora.backend.enums.Etat;
 import com.sn.namora.backend.exceptions.EmailAlreadyExistsException;
+import com.sn.namora.backend.exceptions.IncorrectPasswordException;
 import com.sn.namora.backend.exceptions.UtilisateurNotFoundException;
+import com.sn.namora.backend.model.ResetToken;
 import com.sn.namora.backend.model.Utilisateur;
 import com.sn.namora.backend.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,6 @@ import java.util.UUID;
 public class UtilisateurService {
     private final UtilisateurRepository utilisateurRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
     public Utilisateur createUtilisateur(Utilisateur utilisateur) {
         if (utilisateurRepository.findByEmail(utilisateur.getEmail()).isPresent()) throw new EmailAlreadyExistsException("Cet email existe déjà");
         utilisateur.setId(UUID.randomUUID().toString().substring(0,8));
@@ -92,4 +94,17 @@ public class UtilisateurService {
         }
         else throw new UtilisateurNotFoundException("Utilisateur introuvable");
     }
+
+    public void changePassword(String idUtilisateur,String oldPassword, String newPassword) {
+        Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findById(idUtilisateur);
+        if (utilisateurOptional.isPresent()) {
+            Utilisateur old = utilisateurOptional.get();
+            if (!bCryptPasswordEncoder.matches(oldPassword,old.getMotDePasse())) throw new IncorrectPasswordException("Mot de passe incorrect");
+            old.setMotDePasse(bCryptPasswordEncoder.encode(newPassword));
+            utilisateurRepository.save(old);
+        }
+        else throw new UtilisateurNotFoundException("Utilisateur introuvable");
+    }
+
+
 }

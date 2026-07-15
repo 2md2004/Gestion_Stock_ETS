@@ -19,6 +19,9 @@ public interface ProduitRepository extends JpaRepository<Produit, String> {
 
     List<Produit> findByNomContaining(String nom);
 
+    @Query("SELECT SUM(p.prixAchat * p.quantite) FROM Produit p")
+    Double calculerValeurStock();
+
 
 
 }
