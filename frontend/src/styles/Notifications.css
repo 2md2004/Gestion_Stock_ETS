@@ -1,0 +1,121 @@
+.notificationsPage {
+    padding: 30px;
+}
+
+
+.notificationsCard {
+
+    background:white;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:25px;
+}
+
+
+.notificationsHeader {
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+
+.notificationsHeader h2 {
+
+    color:#002050;
+    font-size:20px;
+
+}
+
+
+.notificationsHeader span {
+
+    font-size:13px;
+    color:#64748b;
+
+}
+
+
+
+.notificationRow {
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:15px;
+    border-bottom:1px solid #e2e8f0;
+
+}
+
+
+.notificationIcon {
+
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+
+.notificationIcon svg {
+
+    width:22px;
+    height:22px;
+    fill:currentColor;
+
+}
+
+
+.notificationIcon.danger {
+
+    background:#fff5f5;
+    color:#c53030;
+
+}
+
+
+.notificationIcon.success {
+
+    background:#f0fff4;
+    color:#2f855a;
+
+}
+
+
+.notificationIcon.warning {
+
+    background:#fffaf0;
+    color:#dd6b20;
+
+}
+
+
+
+.notificationInfo h3 {
+
+    margin:0;
+    font-size:15px;
+    color:#002050;
+
+}
+
+
+.notificationInfo p {
+
+    margin:5px 0;
+    font-size:13px;
+    color:#64748b;
+
+}
+
+
+.notificationInfo small {
+
+    color:#94a3b8;
+    font-size:12px;
+
+}

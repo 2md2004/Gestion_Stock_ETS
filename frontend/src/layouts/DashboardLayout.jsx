@@ -13,6 +13,8 @@ const pageTitles = {
   '/rapport': 'Rapport',
   '/gerants': 'Gérants',
   '/infos-boutique': 'Infos boutique',
+  '/notifications': 'Notifications',
+  '/reapprovisionnement': 'Réapprovisionnement',
 }
 
 const DashboardLayout = () => {

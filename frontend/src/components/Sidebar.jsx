@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import logo from '../assets/logo_EBS.png'
 import '../styles/Sidebar.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -10,6 +10,13 @@ const MenuTitle = ({ children }) => (
 )
 
 const Sidebar = () => {
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('token')
+    navigate('/login')
+  }
+
   return (
     <aside className="sidebar d-flex flex-column bg-white border-end vh-100 p-3">
       {/* LOGO */}
@@ -155,7 +162,7 @@ const Sidebar = () => {
 
       {/* BAS */}
       <div className="sidebarBottom flex-shrink-0 pt-3 border-top mt-auto">
-        <button className="sidebarLogout d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-3 px-2 py-2">
+        <button onClick={handleLogout} className="sidebarLogout d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-3 px-2 py-2">
           <i className="bi bi-box-arrow-right sidebarIcon"></i>
           Déconnexion
         </button>

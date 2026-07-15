@@ -1,0 +1,275 @@
+.profilePage {
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+
+/* Carte principale */
+.profileCard,
+.passwordCard {
+    width: 100%;
+    max-width: 650px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 30px;
+}
+
+/* PROFIL */
+.profileTop {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.profileBigAvatar {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: #002050;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.profileIdentity h2 {
+    margin: 0 0 8px;
+    color: #002050;
+    font-size: 20px;
+}
+
+.profileIdentity span {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.profileIdentity i {
+    margin-right: 8px;
+    color: #D09018;
+}
+
+/* Section informations */
+.profileSection h3 {
+    font-size: 16px;
+    color: #002050;
+    margin-bottom: 20px;
+}
+
+.profileInfoGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.infoItem {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.infoIcon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2fb;
+    color: #002050;
+}
+
+.infoIcon i {
+    font-size: 20px;
+}
+
+.infoItem small {
+    display: block;
+    color: #94a3b8;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.infoItem p {
+    margin: 0;
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status {
+    color: #16a34a !important;
+}
+
+/* CHANGE PASSWORD */
+.passwordCard {
+    max-width: 520px;
+}
+
+.passwordHeader {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.passwordIcon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    background: #eef2fb;
+    color: #002050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.passwordIcon i {
+    font-size: 25px;
+}
+
+.passwordHeader h2 {
+    margin: 0;
+    color: #002050;
+    font-size: 18px;
+}
+
+.passwordHeader p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.passwordField {
+    margin-bottom: 20px;
+}
+
+.passwordField label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.passwordField input {
+    width: 100%;
+    height: 45px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 0 14px;
+    outline: none;
+    font-size: 14px;
+}
+
+.passwordField input:focus {
+    border-color: #002050;
+    box-shadow: 0 0 0 3px rgba(0, 32, 80, .1);
+}
+
+/* Input avec bouton oeil */
+.passwordInput {
+    display: flex;
+}
+
+.passwordInput input {
+    border-radius: 10px 0 0 10px;
+}
+
+.passwordInput button {
+    width: 50px;
+    border: 1px solid #cbd5e1;
+    border-left: none;
+    background: white;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.passwordInput button:hover {
+    color: #002050;
+}
+
+/* Messages */
+.message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.message.error {
+    background: #fff1f2;
+    color: #dc2626;
+}
+
+.message.success {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+/* Bouton */
+.passwordButton {
+    width: 100%;
+    height: 45px;
+    border: none;
+    border-radius: 10px;
+    background: #002050;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.passwordButton:hover {
+    background: #003477;
+}
+
+.passwordButton:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+.loadingCard,
+.errorCard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    .profilePage {
+        padding: 15px;
+    }
+
+    .profileCard,
+    .passwordCard {
+        padding: 20px;
+    }
+
+    .profileInfoGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .profileTop {
+        flex-direction: column;
+        text-align: center;
+    }
+}
