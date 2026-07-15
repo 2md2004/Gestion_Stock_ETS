@@ -8,12 +8,11 @@ import Profile from './pages/Profile'
 import ChangePassword from './pages/ChangePassword'
 import Notifications from './pages/Notifications'
 import Reapprovisionnement from './pages/Reapprovisionnement'
-// import Reapprovisionnement from './pages/Reapprovisionnement'
-// import Alertes from './pages/Alertes'
+import AlertesStock from './pages/AlertesStock'
+import InfosBoutique from './pages/InfosBoutique'
 // import Ventes from './pages/Ventes'
 // import Rapport from './pages/Rapport'
 // import Gerants from './pages/Gerants'
-// import InfosBoutique from './pages/InfosBoutique'
 import DashboardLayout from './layouts/DashboardLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
@@ -35,12 +34,11 @@ function App() {
             <Route path="/modifier-mot-de-passe" element={<ChangePassword />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/reapprovisionnement" element={<Reapprovisionnement />} />
-            {/* <Route path="/reapprovisionnement" element={<Reapprovisionnement />} />
-            <Route path="/alertes" element={<Alertes />} />
-            <Route path="/ventes" element={<Ventes />} />
+            <Route path="/alertes" element={<AlertesStock />} />
+            <Route path="/infos-boutique" element={<InfosBoutique />} />
+            {/* <Route path="/ventes" element={<Ventes />} />
             <Route path="/rapport" element={<Rapport />} />
-            <Route path="/gerants" element={<Gerants />} />
-            <Route path="/infos-boutique" element={<InfosBoutique />} /> */}
+            <Route path="/gerants" element={<Gerants />} /> */}
           </Route>
         </Route>
       </Routes>

@@ -156,7 +156,7 @@ const Sidebar = () => {
           }
         >
           <i className="bi bi-shop sidebarIcon"></i>
-          Infos boutique
+          Infos Boutique
         </NavLink>
       </nav>
 

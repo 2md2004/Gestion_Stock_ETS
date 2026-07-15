@@ -19,7 +19,11 @@ public interface ProduitRepository extends JpaRepository<Produit, String> {
     @Query("SELECT COUNT(p) FROM Produit p WHERE p.quantite <= 5")
     int nbreStockFaible(int quantite);
 
+    Page<Produit> findByQuantiteLessThanEqual(int quantite, Pageable pageable);
+
     List<Produit> findByNomContaining(String nom);
+
+
 
     @Query("SELECT SUM(p.prixAchat * p.quantite) FROM Produit p")
     Double calculerValeurStock();

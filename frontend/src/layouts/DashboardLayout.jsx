@@ -14,7 +14,6 @@ const pageTitles = {
   '/gerants': 'Gérants',
   '/infos-boutique': 'Infos boutique',
   '/notifications': 'Notifications',
-  '/reapprovisionnement': 'Réapprovisionnement',
 }
 
 const DashboardLayout = () => {
