@@ -17,6 +17,12 @@ import Reapprovisionnement from './pages/Reapprovisionnement'
 import DashboardLayout from './layouts/DashboardLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
+import Gerant from './pages/Gerant'
+import GerantArchive from './pages/GerantArchive'
+import ResetPassword from './pages/ResetPassword'
+import Vente from './pages/Vente'
+import DetailsVente from './pages/DetailsVente'
+import AddDetailsVente from './pages/AddDetailsVente'
 
 function App() {
   return (
@@ -25,6 +31,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+        <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
@@ -35,11 +42,16 @@ function App() {
             <Route path="/modifier-mot-de-passe" element={<ChangePassword />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/reapprovisionnement" element={<Reapprovisionnement />} />
+            <Route path="/gerants/archives" element={<GerantArchive />} />
+            <Route path="/gerants" element={<Gerant />} />
+            <Route path="/ventes" element={<Vente />} />
+            <Route path="/ventes/nouvelle" element={<AddDetailsVente />} />
+            <Route path="/ventes/:id" element={<DetailsVente />} />
             {/* <Route path="/reapprovisionnement" element={<Reapprovisionnement />} />
             <Route path="/alertes" element={<Alertes />} />
-            <Route path="/ventes" element={<Ventes />} />
+            
             <Route path="/rapport" element={<Rapport />} />
-            <Route path="/gerants" element={<Gerants />} />
+            
             <Route path="/infos-boutique" element={<InfosBoutique />} /> */}
           </Route>
         </Route>

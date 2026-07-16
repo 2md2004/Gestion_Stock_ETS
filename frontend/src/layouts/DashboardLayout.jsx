@@ -5,21 +5,51 @@ import '../styles/DashboardLayout.css'
 
 const pageTitles = {
   '/dashboard': 'Tableau de bord',
-  '/produits': 'Produits',
-  '/categories': 'Catégories',
-  '/reapprovisionnement': 'Réapprovisionnement',
+  '/produits': 'Gestion des produits',
+  '/categories': 'Gestion des catégories',
+  '/reapprovisionnement': 'Réapprovisionnement stock',
   '/alertes': 'Alertes stock',
-  '/ventes': 'Ventes',
-  '/rapport': 'Rapport',
-  '/gerants': 'Gérants',
-  '/infos-boutique': 'Infos boutique',
-  '/notifications': 'Notifications',
-  '/reapprovisionnement': 'Réapprovisionnement',
+  '/ventes': 'Historique des ventes',
+  '/ventes/nouvelle': 'Nouvelle vente',
+  '/ventes/:id': 'Détails de la vente',
+  '/rapport': 'Rapports et statistiques',
+  '/gerants': 'Gestion des gérants',
+  '/infos-boutique': 'Informations boutique',
+  '/notifications': 'Notifications'
 }
 
 const DashboardLayout = () => {
   const location = useLocation();
-  const title = pageTitles[location.pathname] || 'Tableau de bord';
+  
+  const getPageTitle = (path) => {
+    // Vérifier le chemin exact
+    if (pageTitles[path]) {
+      return pageTitles[path];
+    }
+    
+    // Routes dynamiques
+    if (path.startsWith('/ventes/') && path !== '/ventes/nouvelle') {
+      return pageTitles['/ventes/:id'];
+    }
+    
+    // Routes avec paramètres
+    if (path.startsWith('/produits/')) {
+      return 'Détails du produit';
+    }
+    
+    if (path.startsWith('/categories/')) {
+      return 'Détails de la catégorie';
+    }
+    
+    if (path.startsWith('/gerants/')) {
+      return 'Détails du gérant';
+    }
+    
+    return 'Tableau de bord';
+  };
+
+  const title = getPageTitle(location.pathname);
+
   return (
     <div className="dashboardLayout min-vh-100">
       <Sidebar />
@@ -33,4 +63,4 @@ const DashboardLayout = () => {
   )
 }
 
-export default DashboardLayout;
+export default DashboardLayout

@@ -1,5 +1,7 @@
 package com.sn.namora.backend.controller;
 
+import com.sn.namora.backend.enums.Etat;
+import com.sn.namora.backend.enums.Role;
 import com.sn.namora.backend.model.Utilisateur;
 import com.sn.namora.backend.service.UtilisateurService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/utilisateurs")
+@RequestMapping("/gerants")
 public class UtilisateurController {
     private final UtilisateurService utilisateurService;
 
@@ -23,7 +25,11 @@ public class UtilisateurController {
 
     @GetMapping
     public ResponseEntity<List<Utilisateur>> getAllUtilisateurs() {
-        return new ResponseEntity<>(utilisateurService.getAllUtilisateurs(), HttpStatus.OK);
+        return new ResponseEntity<>(utilisateurService.getAllGerant(), HttpStatus.OK);
+    }
+    @GetMapping("/archives")
+    public ResponseEntity<List<Utilisateur>> getAllUtilisateursArchive() {
+        return new ResponseEntity<>(utilisateurService.getAllUtilisateursByEtat(Etat.ARCHIVE), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

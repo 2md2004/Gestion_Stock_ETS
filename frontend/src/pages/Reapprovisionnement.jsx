@@ -103,40 +103,43 @@ const Reapprovisionnement = () => {
   };
 
   const tableContent = (list) => (
-    <table className="table w-100">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Catégorie</th>
-          <th>Prix d'achat</th>
-          <th>Stock actuel</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {list.map((produit) => (
-          <tr key={produit.id}>
-            <td>{produit.nom}</td>
-            <td>{produit.categorie?.nom || "N/A"}</td>
-            <td>{produit.prixAchat} FCFA</td>
-            <td>
-              <span className={`fw-semibold ${produit.quantite <= 5 ? "text-danger" : "text-success"}`}>
-                {produit.quantite}
-              </span>
-            </td>
-            <td>
-              <button
-                className="btn btn-outline-success btn-sm"
-                title="Réapprovisionner"
-                onClick={() => openModal(produit)}
-              >
-                <i className="bi bi-arrow-repeat"></i>
-              </button>
-            </td>
+    <div className="table-responsive">
+      <table className="table table-hover align-middle mb-0">
+        <thead className="bg-light">
+          <tr>
+            <th className="py-3 ps-4">Nom</th>
+            <th className="py-3">Catégorie</th>
+            <th className="py-3">Prix d'achat</th>
+            <th className="py-3">Stock actuel</th>
+            <th className="py-3 text-center">Actions</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {list.map((produit) => (
+            <tr key={produit.id} className="border-bottom">
+              <td className="ps-4 fw-semibold">{produit.nom}</td>
+              <td>{produit.categorie?.nom || "N/A"}</td>
+              <td>
+                <span className="text-danger">
+                  {produit.prixAchat?.toLocaleString()} FCFA
+                </span>
+              </td>
+              <td>{produit.quantite} unités</td>
+              <td className="text-center">
+                <button
+                  className="btn btn-sm btn-outline-success"
+                  title="Réapprovisionner"
+                  onClick={() => openModal(produit)}
+                  style={{ width: "32px", height: "32px", padding: 0 }}
+                >
+                  <i className="bi bi-arrow-repeat"></i>
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 
   return (
@@ -165,7 +168,7 @@ const Reapprovisionnement = () => {
           </div>
         </div>
 
-        <div className="col-md-12 shadow-sm p-0 bg-white" style={{ borderRadius: "10px" }}>
+        <div className="col-md-12 mt-3 shadow-sm p-0 bg-white" style={{ borderRadius: "10px" }}>
           {loading || isSearching ? (
             <div className="d-flex flex-column justify-content-center align-items-center gap-3" style={{ height: "60vh" }}>
               <ClipLoader color="#002050" loading={loading || isSearching} size={60} />
@@ -180,10 +183,11 @@ const Reapprovisionnement = () => {
                 </div>
               ) : showResults && resultats.length > 0 ? (
                 <>
-                  <div className="d-flex justify-content-between align-items-center p-3 bg-light">
+                  <div className="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
                     <h6 className="mb-0">
                       <i className="bi bi-search me-2"></i>
-                      Résultats pour "{search}" ({resultats.length} produit{resultats.length > 1 ? "s" : ""})
+                      Résultats de recherche pour "<strong>{search}</strong>"
+                      <span className="badge bg-secondary ms-2">{resultats.length}</span>
                     </h6>
                     <button className="btn btn-sm btn-outline-secondary" onClick={clearSearch}>
                       <i className="bi bi-x-circle me-1"></i>
@@ -203,23 +207,21 @@ const Reapprovisionnement = () => {
                     <>
                       {tableContent(produits)}
                       {produits.length !== 0 && (
-                        <div className="mt-4 mb-3">
-                          <nav aria-label="Page navigation example">
-                            <ul className="pagination justify-content-center mb-0">
-                              <li className={`page-item ${currentPage === 0 ? "disabled" : ""}`}>
-                                <button className="page-link" onClick={() => loadPage(currentPage - 1)} style={{ color: "#D09018" }}>
-                                  Précédent
-                                </button>
-                              </li>
-                              {renderPages()}
-                              <li className={`page-item ${currentPage === pages - 1 ? "disabled" : ""}`}>
-                                <button className="page-link" onClick={() => loadPage(currentPage + 1)} style={{ color: "#D09018" }}>
-                                  Suivant
-                                </button>
-                              </li>
-                            </ul>
-                          </nav>
-                        </div>
+                        <nav aria-label="Page navigation example" className="p-3">
+                          <ul className="pagination justify-content-center mb-0">
+                            <li className={`page-item ${currentPage === 0 ? "disabled" : ""}`}>
+                              <button className="page-link" onClick={() => loadPage(currentPage - 1)} style={{ color: "#D09018" }}>
+                                Précédent
+                              </button>
+                            </li>
+                            {renderPages()}
+                            <li className={`page-item ${currentPage === pages - 1 ? "disabled" : ""}`}>
+                              <button className="page-link" onClick={() => loadPage(currentPage + 1)} style={{ color: "#D09018" }}>
+                                Suivant
+                              </button>
+                            </li>
+                          </ul>
+                        </nav>
                       )}
                     </>
                   )}

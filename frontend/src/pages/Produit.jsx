@@ -221,7 +221,7 @@ const Produit = () => {
                     </div>
                 </div>
 
-                <div className="col-md-12 mt-3 shadow-sm p-0 bg-white">
+                <div className="col-md-12 mt-3 shadow-sm p-0 bg-white" style={{ borderRadius: "10px" }}>
                     {loading || isSearching ? (
                         <div
                             className="d-flex flex-column justify-content-center align-items-center gap-3"
@@ -243,10 +243,11 @@ const Produit = () => {
                                 </div>
                             ) : showResults && resultats.length > 0 ? (
                                 <>
-                                    <div className="d-flex justify-content-between align-items-center p-3 bg-light">
+                                    <div className="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
                                         <h6 className="mb-0">
                                             <i className="bi bi-search me-2"></i>
-                                            Résultats de recherche pour "{search}" ({resultats.length} produit{resultats.length > 1 ? 's' : ''})
+                                            Résultats de recherche pour "<strong>{search}</strong>"
+                                            <span className="badge bg-secondary ms-2">{resultats.length}</span>
                                         </h6>
                                         <button
                                             className="btn btn-sm btn-outline-secondary"
@@ -256,185 +257,51 @@ const Produit = () => {
                                             Effacer
                                         </button>
                                     </div>
-                                    <table className="table w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Nom</th>
-                                                <th>Description</th>
-                                                <th>Prix d'achat</th>
-                                                <th>Prix de vente</th>
-                                                <th>Catégorie</th>
-                                                <th>Quantité du stock</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {resultats.map((produit) => (
-                                                <tr key={produit.id}>
-                                                    <td>{produit.nom}</td>
-                                                    <td>{produit.description}</td>
-                                                    <td>{produit.prixAchat} FCFA</td>
-                                                    <td>{produit.prixVente} FCFA</td>
-                                                    <td>{produit.categorie?.nom || 'N/A'}</td>
-                                                    <td>{produit.quantite}</td>
-                                                    <td>
-                                                        <button
-                                                            className="btn btn-outline-primary me-2"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target={`#editModal${produit.id}`}
-                                                        >
-                                                            <i className="bi bi-pencil"></i>
-                                                        </button>
-
-                                                        <button
-                                                            className="btn btn-outline-danger"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target={`#confirmModal${produit.id}`}
-                                                        >
-                                                            <i className="bi bi-trash"></i>
-                                                        </button>
-
-                                                        <div
-                                                            className="modal fade"
-                                                            id={`editModal${produit.id}`}
-                                                        >
-                                                            <div className="modal-dialog">
-                                                                <div className="modal-content">
-                                                                    <div
-                                                                        className="modal-header"
-                                                                        style={{ backgroundColor: "#002050" }}
-                                                                    >
-                                                                        <h1 className="modal-title fs-5 text-white">
-                                                                            Modification d'une produit
-                                                                        </h1>
-                                                                    </div>
-                                                                    <div className="modal-body">
-                                                                        <EditProduit
-                                                                            onUpdate={updateProduitt}
-                                                                            produit={produit}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div
-                                                            className="modal fade"
-                                                            id={`confirmModal${produit.id}`}
-                                                            tabIndex="-1"
-                                                            aria-hidden="true"
-                                                        >
-                                                            <div className="modal-dialog modal-dialog-centered">
-                                                                <div className="modal-content border-0 rounded-4 shadow">
-                                                                    <div className="modal-header border-0 justify-content-center">
-                                                                        <div
-                                                                            className="rounded-circle d-flex align-items-center justify-content-center"
-                                                                            style={{
-                                                                                width: "70px",
-                                                                                height: "70px",
-                                                                                backgroundColor: "#fee2e2",
-                                                                            }}
-                                                                        >
-                                                                            <i
-                                                                                className="bi bi-trash-fill"
-                                                                                style={{
-                                                                                    fontSize: "35px",
-                                                                                    color: "#dc3545",
-                                                                                }}
-                                                                            ></i>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div className="modal-body text-center px-4">
-                                                                        <p className="text-secondary mb-0">
-                                                                            Voulez-vous vraiment supprimer le produit
-                                                                            <br />
-                                                                            <strong className="text-dark">
-                                                                                "{produit.nom}"
-                                                                            </strong>
-                                                                            ?
-                                                                        </p>
-                                                                        <small className="text-danger d-block mt-2">
-                                                                            Cette action est irréversible.
-                                                                        </small>
-                                                                    </div>
-
-                                                                    <div className="modal-footer border-0 justify-content-center pb-4">
-                                                                        <button
-                                                                            type="button"
-                                                                            className="btn btn-sm btn-light rounded-3 px-4"
-                                                                            data-bs-dismiss="modal"
-                                                                        >
-                                                                            Annuler
-                                                                        </button>
-                                                                        <button
-                                                                            type="button"
-                                                                            className="btn btn-sm btn-danger text-white rounded-3 px-4"
-                                                                            data-bs-dismiss="modal"
-                                                                            onClick={() => deleteproduitById(produit.id)}
-                                                                        >
-                                                                            Oui
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </>
-                            ) : (
-                                <>
-                                    {produits.length === 0 ? (
-                                        <div className="text-center py-5">
-                                            <img
-                                                src={EmptyImg}
-                                                alt="empty"
-                                                style={{ width: "300px" }}
-                                            />
-                                            <h5 className="mt-3">Aucun produit ajouté pour le moment</h5>
-                                        </div>
-                                    ) : (
-                                        <table className="table w-100">
-                                            <thead>
+                                    <div className="table-responsive">
+                                        <table className="table table-hover align-middle mb-0">
+                                            <thead className="bg-light">
                                                 <tr>
-                                                    <th>Nom</th>
-                                                    <th>Description</th>
-                                                    <th>Prix d'achat</th>
-                                                    <th>Prix de vente</th>
-                                                    <th>Catégorie</th>
-                                                    <th>Quantité du stock</th>
-                                                    <th>Actions</th>
+                                                    <th className="py-3 ps-4">Nom</th>
+                                                    <th className="py-3">Description</th>
+                                                    <th className="py-3">Prix d'achat</th>
+                                                    <th className="py-3">Prix de vente</th>
+                                                    <th className="py-3">Catégorie</th>
+                                                    <th className="py-3">Quantité</th>
+                                                    <th className="py-3 text-center">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {produits.map((produit) => (
-                                                    <tr key={produit.id}>
-                                                        <td>{produit.nom}</td>
+                                                {resultats.map((produit) => (
+                                                    <tr key={produit.id} className="border-bottom">
+                                                        <td className="ps-4">{produit.nom}</td>
                                                         <td>{produit.description}</td>
                                                         <td>{produit.prixAchat} FCFA</td>
                                                         <td>{produit.prixVente} FCFA</td>
                                                         <td>{produit.categorie?.nom || 'N/A'}</td>
                                                         <td>{produit.quantite}</td>
                                                         <td>
-                                                            <button
-                                                                className="btn btn-outline-primary me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target={`#editModal${produit.id}`}
-                                                            >
-                                                                <i className="bi bi-pencil"></i>
-                                                            </button>
+                                                            <div className="d-flex justify-content-center gap-1">
+                                                                <button
+                                                                    className="btn btn-sm btn-outline-primary"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target={`#editModal${produit.id}`}
+                                                                    title="Modifier"
+                                                                    style={{ width: "32px", height: "32px", padding: 0 }}
+                                                                >
+                                                                    <i className="bi bi-pencil"></i>
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-sm btn-outline-danger"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target={`#confirmModal${produit.id}`}
+                                                                    title="Supprimer"
+                                                                    style={{ width: "32px", height: "32px", padding: 0 }}
+                                                                >
+                                                                    <i className="bi bi-trash"></i>
+                                                                </button>
+                                                            </div>
 
-                                                            <button
-                                                                className="btn btn-outline-danger"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target={`#confirmModal${produit.id}`}
-                                                            >
-                                                                <i className="bi bi-trash"></i>
-                                                            </button>
-
+                                                            {/* Edit Modal */}
                                                             <div
                                                                 className="modal fade"
                                                                 id={`editModal${produit.id}`}
@@ -446,8 +313,13 @@ const Produit = () => {
                                                                             style={{ backgroundColor: "#002050" }}
                                                                         >
                                                                             <h1 className="modal-title fs-5 text-white">
-                                                                                Modification d'une produit
+                                                                                Modification d'un produit
                                                                             </h1>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="btn-close btn-close-white"
+                                                                                data-bs-dismiss="modal"
+                                                                            ></button>
                                                                         </div>
                                                                         <div className="modal-body">
                                                                             <EditProduit
@@ -459,6 +331,7 @@ const Produit = () => {
                                                                 </div>
                                                             </div>
 
+                                                            {/* Delete Confirmation Modal */}
                                                             <div
                                                                 className="modal fade"
                                                                 id={`confirmModal${produit.id}`}
@@ -525,10 +398,166 @@ const Produit = () => {
                                                 ))}
                                             </tbody>
                                         </table>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {produits.length === 0 ? (
+                                        <div className="text-center py-5">
+                                            <img
+                                                src={EmptyImg}
+                                                alt="empty"
+                                                style={{ width: "300px" }}
+                                            />
+                                            <h5 className="mt-3">Aucun produit ajouté pour le moment</h5>
+                                        </div>
+                                    ) : (
+                                        <div className="table-responsive">
+                                            <table className="table table-hover align-middle mb-0">
+                                                <thead className="bg-light">
+                                                    <tr>
+                                                        <th className="py-3 ps-4">Nom</th>
+                                                        <th className="py-3">Description</th>
+                                                        <th className="py-3">Prix d'achat</th>
+                                                        <th className="py-3">Prix de vente</th>
+                                                        <th className="py-3">Catégorie</th>
+                                                        <th className="py-3">Quantité</th>
+                                                        <th className="py-3 text-center">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {produits.map((produit) => (
+                                                        <tr key={produit.id} className="border-bottom">
+                                                            <td className="ps-4">{produit.nom}</td>
+                                                            <td>{produit.description}</td>
+                                                            <td>{produit.prixAchat} FCFA</td>
+                                                            <td>{produit.prixVente} FCFA</td>
+                                                            <td>{produit.categorie?.nom || 'N/A'}</td>
+                                                            <td>{produit.quantite}</td>
+                                                            <td>
+                                                                <div className="d-flex justify-content-center gap-1">
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-primary"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target={`#editModal${produit.id}`}
+                                                                        title="Modifier"
+                                                                        style={{ width: "32px", height: "32px", padding: 0 }}
+                                                                    >
+                                                                        <i className="bi bi-pencil"></i>
+                                                                    </button>
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-danger"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target={`#confirmModal${produit.id}`}
+                                                                        title="Supprimer"
+                                                                        style={{ width: "32px", height: "32px", padding: 0 }}
+                                                                    >
+                                                                        <i className="bi bi-trash"></i>
+                                                                    </button>
+                                                                </div>
+
+                                                                {/* Edit Modal */}
+                                                                <div
+                                                                    className="modal fade"
+                                                                    id={`editModal${produit.id}`}
+                                                                >
+                                                                    <div className="modal-dialog">
+                                                                        <div className="modal-content">
+                                                                            <div
+                                                                                className="modal-header"
+                                                                                style={{ backgroundColor: "#002050" }}
+                                                                            >
+                                                                                <h1 className="modal-title fs-5 text-white">
+                                                                                    Modification d'un produit
+                                                                                </h1>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn-close btn-close-white"
+                                                                                    data-bs-dismiss="modal"
+                                                                                ></button>
+                                                                            </div>
+                                                                            <div className="modal-body">
+                                                                                <EditProduit
+                                                                                    onUpdate={updateProduitt}
+                                                                                    produit={produit}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Delete Confirmation Modal */}
+                                                                <div
+                                                                    className="modal fade"
+                                                                    id={`confirmModal${produit.id}`}
+                                                                    tabIndex="-1"
+                                                                    aria-hidden="true"
+                                                                >
+                                                                    <div className="modal-dialog modal-dialog-centered">
+                                                                        <div className="modal-content border-0 rounded-4 shadow">
+                                                                            <div className="modal-header border-0 justify-content-center">
+                                                                                <div
+                                                                                    className="rounded-circle d-flex align-items-center justify-content-center"
+                                                                                    style={{
+                                                                                        width: "70px",
+                                                                                        height: "70px",
+                                                                                        backgroundColor: "#fee2e2",
+                                                                                    }}
+                                                                                >
+                                                                                    <i
+                                                                                        className="bi bi-trash-fill"
+                                                                                        style={{
+                                                                                            fontSize: "35px",
+                                                                                            color: "#dc3545",
+                                                                                        }}
+                                                                                    ></i>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="modal-body text-center px-4">
+                                                                                <p className="text-secondary mb-0">
+                                                                                    Voulez-vous vraiment supprimer le produit
+                                                                                    <br />
+                                                                                    <strong className="text-dark">
+                                                                                        "{produit.nom}"
+                                                                                    </strong>
+                                                                                    ?
+                                                                                </p>
+                                                                                <small className="text-danger d-block mt-2">
+                                                                                    Cette action est irréversible.
+                                                                                </small>
+                                                                            </div>
+
+                                                                            <div className="modal-footer border-0 justify-content-center pb-4">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-sm btn-light rounded-3 px-4"
+                                                                                    data-bs-dismiss="modal"
+                                                                                >
+                                                                                    Annuler
+                                                                                </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="btn btn-sm btn-danger text-white rounded-3 px-4"
+                                                                                    data-bs-dismiss="modal"
+                                                                                    onClick={() => deleteproduitById(produit.id)}
+                                                                                >
+                                                                                    Oui
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     )}
                                     {produits.length !== 0 && (
-                                        <nav aria-label="Page navigation example">
-                                            <ul className="pagination justify-content-center">
+                                        <nav aria-label="Page navigation example" className="p-3">
+                                            <ul className="pagination justify-content-center mb-0">
                                                 <li className={`page-item ${currentPage === 0 ? "disabled" : ""}`}>
                                                     <button
                                                         className="page-link"

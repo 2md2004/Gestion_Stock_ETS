@@ -1,11 +1,11 @@
 package com.sn.namora.backend.service;
 
-import com.sn.namora.backend.dto.request.ResetRequest;
 import com.sn.namora.backend.enums.Etat;
+import com.sn.namora.backend.enums.Role;
 import com.sn.namora.backend.exceptions.EmailAlreadyExistsException;
 import com.sn.namora.backend.exceptions.IncorrectPasswordException;
+import com.sn.namora.backend.exceptions.TelephoneAlreadyExistsException;
 import com.sn.namora.backend.exceptions.UtilisateurNotFoundException;
-import com.sn.namora.backend.model.ResetToken;
 import com.sn.namora.backend.model.Utilisateur;
 import com.sn.namora.backend.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +24,14 @@ public class UtilisateurService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     public Utilisateur createUtilisateur(Utilisateur utilisateur) {
         if (utilisateurRepository.findByEmail(utilisateur.getEmail()).isPresent()) throw new EmailAlreadyExistsException("Cet email existe déjà");
+        if (utilisateurRepository.findByTelephone(utilisateur.getTelephone()).isPresent()) throw new TelephoneAlreadyExistsException("Ce numéro de téléphone existe déjà");
         utilisateur.setId(UUID.randomUUID().toString().substring(0,8));
         utilisateur.setDateDeCreation(LocalDate.now());
+        utilisateur.setRole(Role.GERANT);
         utilisateur.setEtat(Etat.ACTIF);
-        utilisateur.setMotDePasse(bCryptPasswordEncoder.encode(utilisateur.getMotDePasse()));
+        String password = UUID.randomUUID().toString().substring(0,8);
+        System.out.println("Mot de passe :" + password);
+        utilisateur.setMotDePasse(bCryptPasswordEncoder.encode(password));
         return utilisateurRepository.save(utilisateur);
     }
 
@@ -42,7 +46,12 @@ public class UtilisateurService {
     public List<Utilisateur> getAllUtilisateurs() {
         return utilisateurRepository.findAll();
     }
-
+    public List<Utilisateur> getAllGerant(){
+        return utilisateurRepository.findByRole(Role.GERANT);
+    }
+    public List<Utilisateur> getAllUtilisateursByEtat(Etat etat){
+        return utilisateurRepository.findByEtat(etat);
+    }
     public void deleteUtilisateurById(String id) {
         Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findById(id);
         if (utilisateurOptional.isPresent()) {
@@ -60,6 +69,10 @@ public class UtilisateurService {
             old.setEmail(utilisateur.getEmail());
             old.setMotDePasse(utilisateur.getMotDePasse());
             old.setDateDeCreation(utilisateur.getDateDeCreation());
+            old.setTelephone(utilisateur.getTelephone());
+            old.setSexe(utilisateur.getSexe());
+            old.setRole(utilisateur.getRole());
+            old.setEtat(utilisateur.getEtat());
             return utilisateurRepository.save(old);
         }
         else throw new UtilisateurNotFoundException("Utilisateur introuvable");

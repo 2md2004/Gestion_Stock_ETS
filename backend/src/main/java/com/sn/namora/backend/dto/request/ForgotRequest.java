@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ResetRequest {
+public class ForgotRequest {
     private String email;
 }

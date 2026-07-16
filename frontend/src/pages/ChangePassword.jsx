@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { URL_UTILISATEUR } from '../constants/server'
 import changePasswordImg from '../assets/change_password.png'
-import '../styles/ForgotPassword.css'
+
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({

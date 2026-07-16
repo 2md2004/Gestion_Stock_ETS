@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -22,6 +23,7 @@ public class Produit {
     private BigDecimal prixVente;
     private int quantite;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "categorie_id")
     private Categorie categorie;
 }

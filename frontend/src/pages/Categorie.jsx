@@ -30,11 +30,11 @@ const Categorie = () => {
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    
+
     if (term === "") {
       setFilteredCategories(categories);
     } else {
-      const filtered = categories.filter((categorie) => 
+      const filtered = categories.filter((categorie) =>
         categorie.nom?.toLowerCase().includes(term) ||
         categorie.description?.toLowerCase().includes(term) ||
         categorie.id?.toString().includes(term)
@@ -107,12 +107,12 @@ const Categorie = () => {
                 onChange={handleSearch}
                 style={{ paddingLeft: '40px' }}
               />
-              <i 
-                className="bi bi-search" 
-                style={{ 
-                  position: 'absolute', 
-                  left: '12px', 
-                  top: '50%', 
+              <i
+                className="bi bi-search"
+                style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
                   transform: 'translateY(-50%)',
                   color: '#6c757d'
                 }}
@@ -120,10 +120,10 @@ const Categorie = () => {
               {searchTerm && (
                 <button
                   className="btn btn-link"
-                  style={{ 
-                    position: 'absolute', 
-                    right: '5px', 
-                    top: '50%', 
+                  style={{
+                    position: 'absolute',
+                    right: '5px',
+                    top: '50%',
                     transform: 'translateY(-50%)',
                     textDecoration: 'none',
                     color: '#6c757d'
@@ -137,7 +137,7 @@ const Categorie = () => {
                 </button>
               )}
             </div>
-            
+
             <button
               className="btn text-white"
               data-bs-toggle="modal"
@@ -178,7 +178,7 @@ const Categorie = () => {
           </div>
         </div>
 
-        <div className="col-md-12 mt-3 shadow-sm p-0">
+        <div className="col-md-12 mt-3 shadow-sm bg-white p-0" style={{ borderRadius: "10px" }}>
           {loading ? (
             <div
               className="d-flex flex-column justify-content-center align-items-center gap-3"
@@ -206,130 +206,144 @@ const Categorie = () => {
                   )}
                 </div>
               ) : (
-                <table className="table w-100 mb-0">
-                  <thead>
-                    <tr>
-                      <th>Id</th>
-                      <th>Nom</th>
-                      <th>Description</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredCategories.map((categorie) => (
-                      <tr key={categorie.id}>
-                        <td>{categorie.id}</td>
-                        <td>{categorie.nom}</td>
-                        <td>{categorie.description}</td>
-                        <td>
-                          <button
-                            className="btn btn-outline-primary me-2"
-                            data-bs-toggle="modal"
-                            data-bs-target={`#editModal${categorie.id}`}
-                          >
-                            <i className="bi bi-pencil"></i>
-                          </button>
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle mb-0">
+                    <thead className="bg-light">
+                      <tr>
+                        <th className="py-3 ps-4">Id</th>
+                        <th className="py-3">Nom</th>
+                        <th className="py-3">Description</th>
+                        <th className="py-3 text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredCategories.map((categorie) => (
+                        <tr key={categorie.id} className="border-bottom">
+                          <td className="ps-4">{categorie.id}</td>
+                          <td>{categorie.nom}</td>
+                          <td>{categorie.description}</td>
+                          <td className="text-center">
+                            <div className="d-flex justify-content-center gap-1">
+                              <button
+                                className="btn btn-sm btn-outline-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target={`#editModal${categorie.id}`}
+                                title="Modifier"
+                                style={{ width: "32px", height: "32px", padding: 0 }}
+                              >
+                                <i className="bi bi-pencil"></i>
+                              </button>
 
-                          <button
-                            className="btn btn-outline-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target={`#confirmModal${categorie.id}`}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-
-                          {/* Edit Modal */}
-                          <div
-                            className="modal fade"
-                            id={`editModal${categorie.id}`}
-                          >
-                            <div className="modal-dialog">
-                              <div className="modal-content">
-                                <div
-                                  className="modal-header"
-                                  style={{ backgroundColor: "#002050" }}
-                                >
-                                  <h1 className="modal-title fs-5 text-white">
-                                    Modification d'une categorie
-                                  </h1>
-                                </div>
-                                <div className="modal-body">
-                                  <EditCategorie
-                                    onUpdate={updateCategoriee}
-                                    categorie={categorie}
-                                  />
-                                </div>
-                              </div>
+                              <button
+                                className="btn btn-sm btn-outline-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target={`#confirmModal${categorie.id}`}
+                                title="Supprimer"
+                                style={{ width: "32px", height: "32px", padding: 0 }}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
                             </div>
-                          </div>
 
-                          {/* Delete Confirmation Modal */}
-                          <div
-                            className="modal fade"
-                            id={`confirmModal${categorie.id}`}
-                            tabIndex="-1"
-                            aria-hidden="true"
-                          >
-                            <div className="modal-dialog modal-dialog-centered">
-                              <div className="modal-content border-0 rounded-4 shadow">
-                                <div className="modal-header border-0 justify-content-center">
+                            {/* Edit Modal */}
+                            <div
+                              className="modal fade"
+                              id={`editModal${categorie.id}`}
+                            >
+                              <div className="modal-dialog">
+                                <div className="modal-content">
                                   <div
-                                    className="rounded-circle d-flex align-items-center justify-content-center"
-                                    style={{
-                                      width: "70px",
-                                      height: "70px",
-                                      backgroundColor: "#fee2e2",
-                                    }}
+                                    className="modal-header"
+                                    style={{ backgroundColor: "#002050" }}
                                   >
-                                    <i
-                                      className="bi bi-trash-fill"
-                                      style={{
-                                        fontSize: "35px",
-                                        color: "#dc3545",
-                                      }}
-                                    ></i>
+                                    <h1 className="modal-title fs-5 text-white">
+                                      Modification d'une categorie
+                                    </h1>
+                                    <button
+                                      type="button"
+                                      className="btn-close btn-close-white"
+                                      data-bs-dismiss="modal"
+                                      aria-label="Close"
+                                    ></button>
+                                  </div>
+                                  <div className="modal-body">
+                                    <EditCategorie
+                                      onUpdate={updateCategoriee}
+                                      categorie={categorie}
+                                    />
                                   </div>
                                 </div>
+                              </div>
+                            </div>
 
-                                <div className="modal-body text-center px-4">
-                                  <p className="text-secondary mb-0">
-                                    Voulez-vous vraiment supprimer la catégorie
-                                    <br />
-                                    <strong className="text-dark">
-                                      "{categorie.nom}"
-                                    </strong>
-                                    ?
-                                  </p>
-                                  <small className="text-danger d-block mt-2">
-                                    Cette action est irréversible.
-                                  </small>
-                                </div>
+                            {/* Delete Confirmation Modal */}
+                            <div
+                              className="modal fade"
+                              id={`confirmModal${categorie.id}`}
+                              tabIndex="-1"
+                              aria-hidden="true"
+                            >
+                              <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content border-0 rounded-4 shadow">
+                                  <div className="modal-header border-0 justify-content-center">
+                                    <div
+                                      className="rounded-circle d-flex align-items-center justify-content-center"
+                                      style={{
+                                        width: "70px",
+                                        height: "70px",
+                                        backgroundColor: "#fee2e2",
+                                      }}
+                                    >
+                                      <i
+                                        className="bi bi-trash-fill"
+                                        style={{
+                                          fontSize: "35px",
+                                          color: "#dc3545",
+                                        }}
+                                      ></i>
+                                    </div>
+                                  </div>
 
-                                <div className="modal-footer border-0 justify-content-center pb-4">
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-light rounded-3 px-4"
-                                    data-bs-dismiss="modal"
-                                  >
-                                    Annuler
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-danger text-white rounded-3 px-4"
-                                    data-bs-dismiss="modal"
-                                    onClick={() => deleteCategorieById(categorie.id)}
-                                  >
-                                    Oui
-                                  </button>
+                                  <div className="modal-body text-center px-4">
+                                    <p className="text-secondary mb-0">
+                                      Voulez-vous vraiment supprimer la catégorie
+                                      <br />
+                                      <strong className="text-dark">
+                                        "{categorie.nom}"
+                                      </strong>
+                                      ?
+                                    </p>
+                                    <small className="text-danger d-block mt-2">
+                                      Cette action est irréversible.
+                                    </small>
+                                  </div>
+
+                                  <div className="modal-footer border-0 justify-content-center pb-4">
+                                    <button
+                                      type="button"
+                                      className="btn btn-sm btn-light rounded-3 px-4"
+                                      data-bs-dismiss="modal"
+                                    >
+                                      Annuler
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="btn btn-sm btn-danger text-white rounded-3 px-4"
+                                      data-bs-dismiss="modal"
+                                      onClick={() => deleteCategorieById(categorie.id)}
+                                    >
+                                      Oui
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           )}

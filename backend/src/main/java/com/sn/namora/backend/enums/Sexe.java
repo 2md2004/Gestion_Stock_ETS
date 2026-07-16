@@ -1,5 +1,5 @@
 package com.sn.namora.backend.enums;
 
-public enum Role {
-    ADMIN,GERANT
+public enum Sexe {
+    HOMME,FEMME
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +20,8 @@ public class Vente {
     private String id;
     private LocalDate date;
     private BigDecimal montantTotal;
-//    @JsonManagedReference
-//    @OneToMany(mappedBy = "vente", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<DetailsVente> details = new ArrayList<>();
+    @JsonManagedReference
+    @ToString.Exclude
+    @OneToMany(mappedBy = "vente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetailsVente> details = new ArrayList<>();
 }

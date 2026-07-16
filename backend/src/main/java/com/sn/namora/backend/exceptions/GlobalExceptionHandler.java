@@ -26,20 +26,44 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> emailAlreadyExistException(EmailAlreadyExistsException e) {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),e.getMessage());
-        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),e.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TelephoneAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> telephoneAlreadyExistException(TelephoneAlreadyExistsException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),e.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CategorieAlreadyExistException.class)
     public ResponseEntity<ErrorResponse> categorieAlreadyExistException(CategorieAlreadyExistException e) {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),e.getMessage());
-        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),e.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CategorieNotFoundException.class)
     public ResponseEntity<ErrorResponse> categorieNotFoundException(CategorieNotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),e.getMessage());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResetTokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> resetTokenExpiredException(ResetTokenExpiredException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),e.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ResetTokenInvalidException.class)
+    public ResponseEntity<ErrorResponse> resetTokenInvalidException(ResetTokenInvalidException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),e.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<ErrorResponse> incorrectPasswordException(IncorrectPasswordException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),e.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
 
 

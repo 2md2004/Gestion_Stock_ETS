@@ -1,7 +1,8 @@
 package com.sn.namora.backend.controller;
 
 import com.sn.namora.backend.dto.request.LoginRequest;
-import com.sn.namora.backend.dto.request.ResetRequest;
+import com.sn.namora.backend.dto.request.ForgotRequest;
+import com.sn.namora.backend.dto.request.ResetPasswordRequest;
 import com.sn.namora.backend.dto.response.LoginResponse;
 import com.sn.namora.backend.service.JwtService;
 import com.sn.namora.backend.service.ResetTokenService;
@@ -32,14 +33,14 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public  ResponseEntity<String> forgotPassword(@RequestBody ResetRequest resetRequest) {
-        resetTokenService.forgotPassword(resetRequest.getEmail());
+    public  ResponseEntity<String> forgotPassword(@RequestBody ForgotRequest forgotRequest) {
+        resetTokenService.forgotPassword(forgotRequest.getEmail());
         return ResponseEntity.ok("Un email de réinitialisation a été envoyé à cette adresse");
 
     }
     @PostMapping("/reset-password")
-    public  ResponseEntity<String> resetPassword(@RequestParam String token , String newPassword) {
-        resetTokenService.resetPassword(token, newPassword);
+    public  ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        resetTokenService.resetPassword(resetPasswordRequest.getToken(), resetPasswordRequest.getPassword());
         return ResponseEntity.ok("Mot de passe changé");
 
     }
