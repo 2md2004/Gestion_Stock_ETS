@@ -35,3 +35,10 @@ export const rechercherProduits = async (query) => {
     });
     return data;
 };
+
+export const getProduitsStockFaible = async (page, size, sortBy) => {
+    const response = await api.get(
+        `/produits/stock-faible?page=${page}&size=${size}&sortBy=${sortBy}`
+    );
+    return response.data;
+};

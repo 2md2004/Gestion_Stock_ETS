@@ -47,6 +47,7 @@ public class ProduitService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         return produitRepository.findAll(pageable);
     }
+
     public Produit update(String id, ProduitRequest request) {
 
         Optional<Produit> produitOptional = produitRepository.findById(id);
@@ -84,6 +85,11 @@ public class ProduitService {
     }
     public List<Produit> searchProduits(String nom) {
         return produitRepository.findByNomContaining(nom);
+    }
+
+    public Page<Produit> findProduitsStockFaible(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        return produitRepository.findByQuantiteLessThanEqual(5, pageable);
     }
 
 }

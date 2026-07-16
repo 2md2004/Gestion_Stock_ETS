@@ -1,0 +1,239 @@
+.rapportPage {
+  padding: 24px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.rapportSheet {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.rapportHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #002050;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.rapportBoutiqueInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.rapportLogoEBS {
+  height: 100px;
+  object-fit: contain;
+}
+
+.rapportLogo {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.rapportBoutiqueInfo h2 {
+  color: #002050;
+  font-size: 18px;
+  margin: 0;
+}
+
+.rapportBoutiqueInfo p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.rapportTitreBloc {
+  text-align: right;
+}
+
+.rapportEyebrow {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #D09018;
+  font-weight: 600;
+}
+
+.rapportTitreBloc h1 {
+  color: #002050;
+  font-size: 26px;
+  margin: 4px 0;
+}
+
+.rapportPeriode {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.rapportControles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.rapportTypeSelector {
+  display: flex;
+  gap: 8px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.rapportTypeBtn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.rapportTypeBtn.actif {
+  background: #002050;
+  color: #fff;
+}
+
+.rapportNavDate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #002050;
+}
+
+.rapportNavDate button {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.rapportPrintBtn {
+  background: #D09018;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.rapportKpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.rapportKpiCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rapportKpiLabel {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.rapportKpiValeur {
+  font-size: 22px;
+  font-weight: 700;
+  color: #002050;
+}
+
+.rapportTrend {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rapportTrend.hausse { color: #16a34a; }
+.rapportTrend.baisse { color: #dc2626; }
+
+.rapportGraphiqueBloc h3 {
+  color: #002050;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.rapportGraphique {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 240px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 4px;
+  overflow-x: auto;
+}
+
+.rapportBarreWrapper {
+  flex: 1;
+  min-width: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.rapportBarreValeur {
+  font-size: 10px;
+  color: #002050;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.rapportBarre {
+  width: 100%;
+  background: linear-gradient(180deg, #D09018, #002050);
+  border-radius: 6px 6px 0 0;
+  min-height: 2px;
+  transition: height 0.4s ease;
+}
+
+.rapportBarreLabel {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.rapportLoading, .rapportVide {
+  text-align: center;
+  color: #64748b;
+  padding: 40px 0;
+}
+
+@media print {
+  .noPrint { display: none !important; }
+  .rapportPage { padding: 0; background: #fff; }
+  .rapportSheet { box-shadow: none; }
+}

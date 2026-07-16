@@ -13,7 +13,6 @@ import Reapprovisionnement from './pages/Reapprovisionnement'
 // import Ventes from './pages/Ventes'
 // import Rapport from './pages/Rapport'
 // import Gerants from './pages/Gerants'
-// import InfosBoutique from './pages/InfosBoutique'
 import DashboardLayout from './layouts/DashboardLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
@@ -49,10 +48,15 @@ function App() {
             <Route path="/ventes/:id" element={<DetailsVente />} />
             {/* <Route path="/reapprovisionnement" element={<Reapprovisionnement />} />
             <Route path="/alertes" element={<Alertes />} />
-            
+
             <Route path="/rapport" element={<Rapport />} />
-            
+
             <Route path="/infos-boutique" element={<InfosBoutique />} /> */}
+            <Route path="/alertes" element={<AlertesStock />} />
+            <Route path="/infos-boutique" element={<InfosBoutique />} />
+            <Route path="/rapport" element={<RapportVentes />} />
+           {/* <Route path="/ventes" element={<Ventes />} />
+           <Route path="/gerants" element={<Gerants />} /> */}
           </Route>
         </Route>
       </Routes>

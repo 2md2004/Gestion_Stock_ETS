@@ -32,6 +32,13 @@ public class ProduitController {
     public ResponseEntity<List<Produit>> findByNomContaining(@RequestParam("q") String nom) {
         return new ResponseEntity<>(produitService.searchProduits(nom), HttpStatus.OK);
     }
+    @GetMapping("/stock-faible")
+    public ResponseEntity<Page<Produit>> getProduitsStockFaible(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "7") int size,
+            @RequestParam(defaultValue = "nom") String sortBy) {
+        return ResponseEntity.ok(produitService.findProduitsStockFaible(page, size, sortBy));
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Produit>> getProduitById(@PathVariable String id) {
         return new ResponseEntity<>(produitService.findById(id),HttpStatus.OK);

@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface VenteRepository extends JpaRepository<Vente,String> {
     List<Vente> findByDate(LocalDate date);
+    List<Vente> findByDateBetween(LocalDate debut, LocalDate fin);
 
     @Query("""
             SELECT MAX(SUBSTRING(v.id,9))
