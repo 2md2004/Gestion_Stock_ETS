@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import logo from '../assets/logo_EBS.png'
 import '../styles/Sidebar.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
+import { useEffect } from 'react'
 
 const MenuTitle = ({ children }) => (
   <div className="menuTitle text-uppercase text-secondary fw-bold px-2 mt-3 mb-1">
@@ -11,11 +12,15 @@ const MenuTitle = ({ children }) => (
 
 const Sidebar = () => {
   const navigate = useNavigate()
-
+  
   const handleLogout = () => {
     sessionStorage.removeItem('token')
     navigate('/login')
   }
+    useEffect(() => {
+      
+    }, []);
+
 
   return (
     <aside className="sidebar d-flex flex-column bg-white border-end vh-100 p-3">

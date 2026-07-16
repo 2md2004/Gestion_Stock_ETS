@@ -20,6 +20,14 @@ export const createVente = async (vente) => {
 export const deleteVente = async (id) => {
     const response = await api.delete(`/ventes/${id}`);
     return response.data;
+}
+export const rechercherVentes = async (query) => {
+    const { data } = await api.get(`/ventes/search`, {
+        params: { q: query },
+    });
+    return data;
+};
+
 export const getRapportVentes = async (type, date) => {
   const params = { type };
   if (date) params.date = date;

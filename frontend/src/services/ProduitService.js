@@ -42,3 +42,9 @@ export const getProduitsStockFaible = async (page, size, sortBy) => {
     );
     return response.data;
 };
+
+export const reapprovisionnementProduit = async (id,reapprovisionnementDto) => {
+    const response = await api.patch(`/produits/reapprovisionnement/${id}`,reapprovisionnementDto);
+    return response.data;
+};
+

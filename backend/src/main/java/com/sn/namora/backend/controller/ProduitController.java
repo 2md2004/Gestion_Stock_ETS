@@ -2,6 +2,7 @@ package com.sn.namora.backend.controller;
 
 
 import com.sn.namora.backend.dto.request.ProduitRequest;
+import com.sn.namora.backend.dto.request.ReapproRequest;
 import com.sn.namora.backend.model.Produit;
 import com.sn.namora.backend.service.ProduitService;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,10 @@ public class ProduitController {
     public ResponseEntity<Void> deleteProduit(@PathVariable String id) {
         produitService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    @PatchMapping("/reapprovisionnement/{id}")
+    public ResponseEntity<Produit> reapprovisionnerProduit(@PathVariable String id,@RequestBody ReapproRequest request ) {
+        return new ResponseEntity<>(produitService.reapprovisionnerProduit(request), HttpStatus.OK);
     }
 
 

@@ -2,6 +2,7 @@ package com.sn.namora.backend.service;
 
 
 import com.sn.namora.backend.dto.request.ProduitRequest;
+import com.sn.namora.backend.dto.request.ReapproRequest;
 import com.sn.namora.backend.exceptions.CategorieNotFoundException;
 import com.sn.namora.backend.exceptions.ProduitNotFoundException;
 import com.sn.namora.backend.model.Categorie;
@@ -90,6 +91,17 @@ public class ProduitService {
     public Page<Produit> findProduitsStockFaible(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         return produitRepository.findByQuantiteLessThanEqual(5, pageable);
+    }
+
+    public Produit reapprovisionnerProduit(ReapproRequest request){
+        Optional<Produit> produitOptional = produitRepository.findById(request.getIdProduit());
+        if (produitOptional.isPresent()) {
+            Produit produit = produitOptional.get();
+            produit.setQuantite(request.getQuantite() + produit.getQuantite());
+            return produitRepository.save(produit);
+        }
+        else throw new ProduitNotFoundException("Produit introuvable");
+
     }
 
 }

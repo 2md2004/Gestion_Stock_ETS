@@ -3,7 +3,7 @@ import "../styles/Produit.css";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import EmptyImg from "../assets/Empty (1).gif";
-import { getProduitsPerPage, rechercherProduits } from "../services/ProduitService";
+import { getProduitsPerPage, rechercherProduits, reapprovisionnementProduit } from "../services/ProduitService";
 import useDebounce from "../hooks/useDebounce";
 
 const Reapprovisionnement = () => {
@@ -19,6 +19,7 @@ const Reapprovisionnement = () => {
   const [selectedProduit, setSelectedProduit] = useState(null);
   const [quantite, setQuantite] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // ✅ Pour forcer le rechargement
 
   const loadPage = async (page) => {
     setLoading(true);
@@ -29,6 +30,7 @@ const Reapprovisionnement = () => {
       setCurrentPage(page);
     } catch (error) {
       console.log(error);
+      toast.error("Erreur lors du chargement des produits");
       setProduits([]);
     } finally {
       setLoading(false);
@@ -37,14 +39,20 @@ const Reapprovisionnement = () => {
 
   useEffect(() => {
     loadPage(0);
-  }, []);
+  }, [refreshTrigger]); // ✅ Recharger quand refreshTrigger change
 
   useEffect(() => {
     if (searchDebounce.trim().length >= 2) {
       setIsSearching(true);
       rechercherProduits(searchDebounce)
-        .then((data) => { setResultats(data); setShowResults(true); })
-        .catch(() => setResultats([]))
+        .then((data) => { 
+          setResultats(data); 
+          setShowResults(true); 
+        })
+        .catch(() => {
+          setResultats([]);
+          toast.error("Erreur lors de la recherche");
+        })
         .finally(() => setIsSearching(false));
     } else {
       setResultats([]);
@@ -83,23 +91,63 @@ const Reapprovisionnement = () => {
     setQuantite("");
   };
 
-  const handleReapprovisionner = () => {
+  const handleReapprovisionner = async () => {
     if (!quantite || Number(quantite) <= 0) {
       toast.warning("Veuillez saisir une quantité valide");
       return;
     }
+
     setSubmitting(true);
-    setTimeout(() => {
-      toast.success(`${quantite} unité(s) ajoutée(s) au stock de "${selectedProduit.nom}"`);
+    try {
+      const dto = {
+        idProduit: selectedProduit.id,
+        quantite: Number(quantite)
+      };
+      
+      // Appel API
+      const updatedProduit = await reapprovisionnementProduit(selectedProduit.id, dto);
+      
+      // ✅ Mettre à jour avec les données du backend
       setProduits((prev) =>
         prev.map((p) =>
-          p.id === selectedProduit.id ? { ...p, quantite: p.quantite + Number(quantite) } : p
+          p.id === selectedProduit.id ? updatedProduit : p
         )
       );
+      
+      // Mettre à jour les résultats de recherche
+      if (showResults) {
+        setResultats((prev) =>
+          prev.map((p) =>
+            p.id === selectedProduit.id ? updatedProduit : p
+          )
+        );
+      }
+      
+      toast.success(`${quantite} unité(s) ajoutée(s) au stock de "${selectedProduit.nom}"`);
       setSelectedProduit(null);
       setQuantite("");
+      
+      // ✅ Optionnel: Forcer un rechargement après un délai
+      // setRefreshTrigger(prev => prev + 1);
+      
+    } catch (error) {
+      console.error("Erreur lors du réapprovisionnement:", error);
+      toast.error("Erreur lors du réapprovisionnement. Veuillez réessayer.");
+      
+      // ✅ En cas d'erreur, recharger pour être sûr d'avoir les bonnes données
+      if (showResults && search.length >= 2) {
+        try {
+          const data = await rechercherProduits(search);
+          setResultats(data);
+        } catch (e) {
+          console.error("Erreur lors du rechargement:", e);
+        }
+      } else {
+        await loadPage(currentPage);
+      }
+    } finally {
       setSubmitting(false);
-    }, 500);
+    }
   };
 
   const tableContent = (list) => (
@@ -120,11 +168,11 @@ const Reapprovisionnement = () => {
               <td className="ps-4 fw-semibold">{produit.nom}</td>
               <td>{produit.categorie?.nom || "N/A"}</td>
               <td>
-                <span className="text-danger">
-                  {produit.prixAchat?.toLocaleString()} FCFA
-                </span>
+                {produit.prixAchat?.toLocaleString()} FCFA
               </td>
-              <td>{produit.quantite} unités</td>
+              <td>
+                 {produit.quantite}
+              </td>
               <td className="text-center">
                 <button
                   className="btn btn-sm btn-outline-success"
@@ -147,6 +195,10 @@ const Reapprovisionnement = () => {
       <div className="row">
         <div className="col-md-12">
           <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="fw-bold mb-0">
+              <i className="bi bi-arrow-repeat me-2" style={{ color: "#002050" }}></i>
+              Réapprovisionnement des stocks
+            </h5>
             <div className="search-box" style={{ position: "relative", width: "300px" }}>
               <input
                 type="text"
@@ -232,6 +284,7 @@ const Reapprovisionnement = () => {
         </div>
       </div>
 
+      {/* Modal de réapprovisionnement */}
       {selectedProduit && (
         <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -264,6 +317,10 @@ const Reapprovisionnement = () => {
                     autoFocus
                   />
                 </div>
+                <div className="alert alert-info">
+                  <i className="bi bi-info-circle me-2"></i>
+                  Le nouveau stock sera de <strong>{selectedProduit.quantite + (Number(quantite) || 0)}</strong> unités
+                </div>
               </div>
               <div className="modal-footer border-0 pb-4">
                 <button type="button" className="btn btn-light rounded-3 px-4" onClick={() => setSelectedProduit(null)}>
@@ -274,14 +331,19 @@ const Reapprovisionnement = () => {
                   className="btn text-white rounded-3 px-4"
                   style={{ backgroundColor: "#002050" }}
                   onClick={handleReapprovisionner}
-                  disabled={submitting}
+                  disabled={submitting || !quantite || Number(quantite) <= 0}
                 >
                   {submitting ? (
-                    <span className="spinner-border spinner-border-sm me-1"></span>
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      Traitement...
+                    </>
                   ) : (
-                    <i className="bi bi-check-circle me-1"></i>
+                    <>
+                      <i className="bi bi-check-circle me-1"></i>
+                      Confirmer
+                    </>
                   )}
-                  Confirmer
                 </button>
               </div>
             </div>

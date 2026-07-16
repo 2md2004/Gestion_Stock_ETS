@@ -12,15 +12,14 @@ const pageTitles = {
   '/ventes': 'Historique des ventes',
   '/ventes/nouvelle': 'Nouvelle vente',
   '/ventes/:id': 'Détails de la vente',
-  '/rapport': 'Rapports et statistiques',
+
 
   '/infos-boutique': 'Informations boutique',
-  '/notifications': 'Notifications'
+  '/notifications': 'Notifications',
 
   '/rapport': 'Rapport',
   '/gerants': 'Gérants',
-  '/infos-boutique': 'Infos boutique',
-  '/notifications': 'Notifications',
+
 }
 
 const DashboardLayout = () => {
