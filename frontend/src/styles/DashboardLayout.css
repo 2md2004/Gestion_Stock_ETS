@@ -10,7 +10,6 @@
     .dashboardMain { margin-left: 220px; }
 }
 
-@media (max-width: 768px) {
-    .dashboardLayout { display: block; }
+@media (max-width: 991px) {
     .dashboardMain { margin-left: 0; }
 }

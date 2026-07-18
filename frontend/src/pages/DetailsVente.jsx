@@ -135,7 +135,7 @@ const DetailsVente = () => {
 
                                 <div>
                                     <div className="row">
-                                        <div className="col-md-6 mb-2">
+                                        <div className="col-md-4 mb-2">
                                             <div className="d-flex align-items-center">
                                                 <i className="bi bi-calendar3 me-2" style={{ color: "#002050", fontSize: "1.2rem" }}></i>
                                                 <div>
@@ -146,7 +146,18 @@ const DetailsVente = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-md-6 mb-2">
+                                        <div className="col-md-4 mb-2">
+                                            <div className="d-flex align-items-center">
+                                                <i className="bi bi-person me-2" style={{ color: "#002050", fontSize: "1.2rem" }}></i>
+                                                <div>
+                                                    <small className="text-muted d-block" style={{ fontSize: "0.7rem" }}>CLIENT</small>
+                                                    <span style={{ fontSize: "1rem", fontWeight: "500", color: "#333" }}>
+                                                        {vente.client ? `${vente.client.prenom || ""} ${vente.client.nom || ""}`.trim() : "Client non renseigné"}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 mb-2">
                                             <div className="d-flex align-items-center">
                                                 <i className="bi bi-cash-coin me-2" style={{ color: "#002050", fontSize: "1.2rem" }}></i>
                                                 <div>

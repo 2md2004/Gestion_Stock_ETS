@@ -4,6 +4,7 @@ import com.sn.namora.backend.repository.CategorieRepository;
 import com.sn.namora.backend.repository.ProduitRepository;
 import com.sn.namora.backend.repository.VenteRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StatsService {
     private final ProduitRepository produitRepository;
     private final CategorieRepository categorieRepository;
@@ -25,53 +27,91 @@ public class StatsService {
         int mois = now.getMonthValue();
         int annee = now.getYear();
 
-        BigDecimal beneficeMois = venteRepository.getBeneficeMois(mois, annee);
-        BigDecimal chiffreAffaireMois = venteRepository.getChiffreAffaireMois(mois, annee);
-        BigDecimal beneficeAnnee = venteRepository.getBeneficeAnnee(annee);
-        BigDecimal chiffreAffaireAnnee = venteRepository.getChiffreAffaireAnnee(annee);
-
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCategories", categorieRepository.count());
         stats.put("valeurStock", produitRepository.calculerValeurStock());
         stats.put("totalProduits", produitRepository.count());
         stats.put("stockFaible", produitRepository.nbreStockFaible(5));
-        stats.put("nbreVentesDuJour", venteRepository.getNbreVentesDuJour(LocalDate.now()));
-        stats.put("beneficeMois", beneficeMois);
-        stats.put("chiffreAffaireMois", chiffreAffaireMois);
-        stats.put("beneficeAnnee", beneficeAnnee);
-        stats.put("chiffreAffaireAnnee", chiffreAffaireAnnee);
+        stats.put("nbreVentesDuJour", venteRepository.getNbreVentesDuJour(now));
 
-        // Produit le plus vendu du mois
-        List<Object[]> produitPlusVenduMois = produitRepository.getProduitPlusVenduMois(mois, annee);
-        if (!produitPlusVenduMois.isEmpty()) {
-            Object[] data = produitPlusVenduMois.get(0);
-            Map<String, Object> produit = new HashMap<>();
-            produit.put("id", data[0]);
-            produit.put("nom", data[1]);
-            produit.put("quantite", data[2]);
-            stats.put("produitPlusVenduMois", produit);
+        try {
+            stats.put("beneficeMois", venteRepository.getBeneficeMois(mois, annee));
+        } catch (Exception e) {
+            log.error("Erreur getBeneficeMois", e);
+            stats.put("beneficeMois", BigDecimal.ZERO);
         }
 
-        List<Object[]> produitPlusVenduAnnee = produitRepository.getProduitPlusVenduAnnee(annee);
-        if (!produitPlusVenduAnnee.isEmpty()) {
-            Object[] data = produitPlusVenduAnnee.get(0);
-            Map<String, Object> produit = new HashMap<>();
-            produit.put("id", data[0]);
-            produit.put("nom", data[1]);
-            produit.put("quantite", data[2]);
-            stats.put("produitPlusVenduAnnee", produit);
+        try {
+            stats.put("chiffreAffaireMois", venteRepository.getChiffreAffaireMois(mois, annee));
+        } catch (Exception e) {
+            log.error("Erreur getChiffreAffaireMois", e);
+            stats.put("chiffreAffaireMois", BigDecimal.ZERO);
         }
 
+        try {
+            stats.put("beneficeAnnee", venteRepository.getBeneficeAnnee(annee));
+        } catch (Exception e) {
+            log.error("Erreur getBeneficeAnnee", e);
+            stats.put("beneficeAnnee", BigDecimal.ZERO);
+        }
 
-        List<Object[]> top5Mois = produitRepository.getTop5ProduitsPlusVendusMois(mois, annee);
-        stats.put("top5ProduitsMois", convertirEnListe(top5Mois));
+        try {
+            stats.put("chiffreAffaireAnnee", venteRepository.getChiffreAffaireAnnee(annee));
+        } catch (Exception e) {
+            log.error("Erreur getChiffreAffaireAnnee", e);
+            stats.put("chiffreAffaireAnnee", BigDecimal.ZERO);
+        }
 
+        try {
+            List<Object[]> produitPlusVenduMois = produitRepository.getProduitPlusVenduMois(mois, annee);
+            if (!produitPlusVenduMois.isEmpty()) {
+                Object[] data = produitPlusVenduMois.get(0);
+                Map<String, Object> produit = new HashMap<>();
+                produit.put("id", data[0]);
+                produit.put("nom", data[1]);
+                produit.put("quantite", data[2]);
+                stats.put("produitPlusVenduMois", produit);
+            }
+        } catch (Exception e) {
+            log.error("Erreur getProduitPlusVenduMois", e);
+        }
 
-        List<Object[]> top5Annee = produitRepository.getTop5ProduitsPlusVendusAnnee(annee);
-        stats.put("top5ProduitsAnnee", convertirEnListe(top5Annee));
+        try {
+            List<Object[]> produitPlusVenduAnnee = produitRepository.getProduitPlusVenduAnnee(annee);
+            if (!produitPlusVenduAnnee.isEmpty()) {
+                Object[] data = produitPlusVenduAnnee.get(0);
+                Map<String, Object> produit = new HashMap<>();
+                produit.put("id", data[0]);
+                produit.put("nom", data[1]);
+                produit.put("quantite", data[2]);
+                stats.put("produitPlusVenduAnnee", produit);
+            }
+        } catch (Exception e) {
+            log.error("Erreur getProduitPlusVenduAnnee", e);
+        }
 
-        // Ventes par jour pour le graphique
-        stats.put("ventesParJour", getVentesParJour());
+        try {
+            List<Object[]> top5Mois = produitRepository.getTop5ProduitsPlusVendusMois(mois, annee);
+            stats.put("top5ProduitsMois", convertirEnListe(top5Mois));
+        } catch (Exception e) {
+            log.error("Erreur getTop5ProduitsPlusVendusMois", e);
+            stats.put("top5ProduitsMois", new ArrayList<>());
+        }
+
+        try {
+            List<Object[]> top5Annee = produitRepository.getTop5ProduitsPlusVendusAnnee(annee);
+            stats.put("top5ProduitsAnnee", convertirEnListe(top5Annee));
+        } catch (Exception e) {
+            log.error("Erreur getTop5ProduitsPlusVendusAnnee", e);
+            stats.put("top5ProduitsAnnee", new ArrayList<>());
+        }
+
+        try {
+            stats.put("ventesParJour", getVentesParJour());
+        } catch (Exception e) {
+            log.error("Erreur getVentesParJour", e);
+            stats.put("ventesParJour", new ArrayList<>());
+        }
 
         return stats;
     }
@@ -80,7 +120,6 @@ public class StatsService {
         List<Object[]> result = venteRepository.getVentesParJour();
         List<Map<String, Object>> data = new ArrayList<>();
 
-        // Jours de la semaine en français
         Map<String, String> joursMap = new HashMap<>();
         joursMap.put("Monday", "Lun");
         joursMap.put("Tuesday", "Mar");
@@ -90,11 +129,9 @@ public class StatsService {
         joursMap.put("Saturday", "Sam");
         joursMap.put("Sunday", "Dim");
 
-        // Initialiser tous les jours à 0
         String[] jours = {"Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"};
         Map<String, Double> mapVentes = new HashMap<>();
 
-        // Remplir avec les données de la base
         for (Object[] row : result) {
             String jour = (String) row[0];
             Double total = ((Number) row[1]).doubleValue();
@@ -102,7 +139,6 @@ public class StatsService {
             mapVentes.put(jourFr, total);
         }
 
-        // Construire la liste avec tous les jours
         for (String jour : jours) {
             Map<String, Object> item = new HashMap<>();
             item.put("jour", jour);

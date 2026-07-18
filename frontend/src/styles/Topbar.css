@@ -16,6 +16,26 @@
     margin-top:2px;
 }
 
+/* Hamburger */
+.hamburgerBtn {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #002050;
+    font-size: 22px;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+
+.hamburgerBtn:hover {
+    background: #eef2fb;
+}
+
 /* Recherche */
 
 .topbarSearch{
@@ -248,24 +268,22 @@
     background:#fff5f5;
 }
 
-/* Responsive */
+/* ===== RESPONSIVE ===== */
 
-@media(max-width:768px){
-
-    .notificationMenu{
-        width:320px;
+@media (max-width: 991px) {
+    .hamburgerBtn {
+        display: flex;
     }
-
 }
 
-@media(max-width:600px){
-
+@media(max-width:768px){
     .topbar{
+        height: 60px;
         padding:0 15px!important;
     }
 
     .topbarTitle{
-        font-size:17px;
+        font-size:16px;
     }
 
     .topbarSubtitle{
@@ -276,9 +294,27 @@
         display:none!important;
     }
 
+    .profileButton {
+        padding: 4px !important;
+    }
+
     .notificationMenu{
         width:300px;
         right:-40px;
     }
 
+    .topbarDate {
+        display: none !important;
+    }
+}
+
+@media(max-width:480px){
+    .topbarTitle{
+        font-size:14px;
+    }
+
+    .notificationMenu{
+        width: 260px;
+        right: -20px;
+    }
 }

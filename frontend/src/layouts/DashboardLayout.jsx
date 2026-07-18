@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
@@ -12,53 +13,53 @@ const pageTitles = {
   '/ventes': 'Historique des ventes',
   '/ventes/nouvelle': 'Nouvelle vente',
   '/ventes/:id': 'Détails de la vente',
-
-
   '/infos-boutique': 'Informations boutique',
   '/notifications': 'Notifications',
-
+  '/gerants/archives': 'Gérants archivés',
   '/rapport': 'Rapport',
   '/gerants': 'Gérants',
-
 }
 
 const DashboardLayout = () => {
-  const location = useLocation();
+  const location = useLocation()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Fermer le sidebar quand on navigue
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [location.pathname])
 
   const getPageTitle = (path) => {
-    // Vérifier le chemin exact
     if (pageTitles[path]) {
-      return pageTitles[path];
+      return pageTitles[path]
     }
-
-    // Routes dynamiques
     if (path.startsWith('/ventes/') && path !== '/ventes/nouvelle') {
-      return pageTitles['/ventes/:id'];
+      return pageTitles['/ventes/:id']
     }
-
-    // Routes avec paramètres
     if (path.startsWith('/produits/')) {
-      return 'Détails du produit';
+      return 'Détails du produit'
     }
-
     if (path.startsWith('/categories/')) {
-      return 'Détails de la catégorie';
+      return 'Détails de la catégorie'
     }
-
     if (path.startsWith('/gerants/')) {
-      return 'Détails du gérant';
+      return 'Détails du gérant'
     }
+    return 'Tableau de bord'
+  }
 
-    return 'Tableau de bord';
-  };
-
-  const title = getPageTitle(location.pathname);
+  const title = getPageTitle(location.pathname)
 
   return (
     <div className="dashboardLayout min-vh-100">
-      <Sidebar />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {sidebarOpen && (
+        <div className="sidebarOverlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
       <div className="dashboardMain min-vh-100 d-flex flex-column">
-        <Topbar title={title} />
+        <Topbar title={title} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
         <main className="dashboardContent flex-grow-1 p-3 p-md-4">
           <Outlet />
         </main>
@@ -67,4 +68,4 @@ const DashboardLayout = () => {
   )
 }
 
-export default DashboardLayout;
+export default DashboardLayout

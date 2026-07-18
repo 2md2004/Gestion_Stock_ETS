@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Topbar.css'
-
-const notifs = [
-  { id: 1, type: 'danger', title: 'Stock faible', message: 'Le ciment est presque en rupture de stock.', time: 'Il y a 2h' },
-  { id: 2, type: 'success', title: 'Nouvelle vente', message: 'Une vente de 45 000 FCFA a été enregistrée.', time: 'Il y a 5h' },
-  { id: 3, type: 'warning', title: 'Réapprovisionnement', message: 'Une nouvelle livraison est arrivée.', time: 'Hier' },
-]
+import { getStatitisques } from '../services/DashboardService'
+import { getProduitsStockFaible } from '../services/ProduitService'
 
 const notifIcons = {
   danger: 'bi-exclamation-circle-fill text-danger',
@@ -14,9 +10,10 @@ const notifIcons = {
   warning: 'bi-info-circle-fill text-warning',
 }
 
-const Topbar = ({ title = 'Tableau de bord' }) => {
+const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
+  const [notifs, setNotifs] = useState([])
   const menuRef = useRef(null)
   const notifRef = useRef(null)
   const navigate = useNavigate()
@@ -40,6 +37,45 @@ const Topbar = ({ title = 'Tableau de bord' }) => {
     setMenuOpen(false)
     navigate('/modifier-mot-de-passe')
   }
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        const [stats, produitsFaible] = await Promise.all([
+          getStatitisques(),
+          getProduitsStockFaible(0, 5, 'nom').then((data) => data.content || []),
+        ])
+
+        const newNotifs = []
+
+        if (stats.nbreVentesDuJour > 0) {
+          newNotifs.push({
+            id: 'vente-jour',
+            type: 'success',
+            title: 'Ventes du jour',
+            message: `${stats.nbreVentesDuJour} vente(s) aujourd'hui.`,
+            time: "Aujourd'hui",
+          })
+        }
+
+        produitsFaible.forEach((produit) => {
+          newNotifs.push({
+            id: `stock-${produit.id}`,
+            type: 'danger',
+            title: 'Stock faible',
+            message: `"${produit.nom}" n'a plus que ${produit.quantite} unité(s) en stock.`,
+            time: 'En cours',
+          })
+        })
+
+        setNotifs(newNotifs.slice(0, 3))
+      } catch (error) {
+        console.error('Erreur chargement notifications:', error)
+      }
+    }
+
+    loadNotifications()
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -68,10 +104,15 @@ const Topbar = ({ title = 'Tableau de bord' }) => {
   }).format(new Date())
 
   return (
-    <header className="topbar d-flex align-items-center justify-content-between gap-3 bg-white border-bottom px-4">
-      <div className="topbarLeft d-flex flex-column flex-shrink-0">
-        <h1 className="topbarTitle mb-0 fw-bold">{title}</h1>
-        <span className="topbarSubtitle text-secondary">Gestion de stock</span>
+    <header className="topbar d-flex align-items-center justify-content-between gap-3 bg-white border-bottom px-3 px-md-4">
+      <div className="topbarLeft d-flex align-items-center gap-2">
+        <button className="hamburgerBtn d-lg-none" onClick={onToggleSidebar}>
+          <i className="bi bi-list"></i>
+        </button>
+        <div className="d-flex flex-column flex-shrink-0">
+          <h1 className="topbarTitle mb-0 fw-bold">{title}</h1>
+          <span className="topbarSubtitle text-secondary">Gestion de stock</span>
+        </div>
       </div>
 
       <div className="topbarRight d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
@@ -81,9 +122,14 @@ const Topbar = ({ title = 'Tableau de bord' }) => {
         </div>
 
         <div className="notificationWrapper" ref={notifRef}>
-          <button onClick={() => setNotifOpen(!notifOpen)} className="notification position-relative border-0 rounded-3 bg-light d-flex align-items-center justify-content-center">
+          <button
+            onClick={() => setNotifOpen(!notifOpen)}
+            className="notification position-relative border-0 rounded-3 bg-light d-flex align-items-center justify-content-center"
+          >
             <i className="bi bi-bell"></i>
-            <span className="badge rounded-pill position-absolute top-0 start-100 translate-middle">{notifs.length}</span>
+            <span className="badge rounded-pill position-absolute top-0 start-100 translate-middle">
+              {notifs.length}
+            </span>
           </button>
 
           {notifOpen && (
@@ -105,7 +151,12 @@ const Topbar = ({ title = 'Tableau de bord' }) => {
               ))}
 
               <div className="notificationFooter">
-                <button onClick={() => { setNotifOpen(false); navigate('/notifications') }}>
+                <button
+                  onClick={() => {
+                    setNotifOpen(false)
+                    navigate('/notifications')
+                  }}
+                >
                   Voir toutes les notifications
                 </button>
               </div>
@@ -132,17 +183,26 @@ const Topbar = ({ title = 'Tableau de bord' }) => {
 
           {menuOpen && (
             <div className="profileMenu position-absolute end-0 bg-white border rounded-3 shadow-sm p-2">
-              <button onClick={goToProfile} className="d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-2 px-2 py-2">
+              <button
+                onClick={goToProfile}
+                className="d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-2 px-2 py-2"
+              >
                 <i className="bi bi-person-circle"></i>
                 Mon profil
               </button>
 
-              <button onClick={goToChangePassword} className="d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-2 px-2 py-2">
+              <button
+                onClick={goToChangePassword}
+                className="d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-2 px-2 py-2"
+              >
                 <i className="bi bi-lock"></i>
                 Modifier mot de passe
               </button>
 
-              <button onClick={handleLogout} className="danger d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-2 px-2 py-2">
+              <button
+                onClick={handleLogout}
+                className="danger d-flex align-items-center gap-2 w-100 border-0 bg-transparent rounded-2 px-2 py-2"
+              >
                 <i className="bi bi-box-arrow-right"></i>
                 Déconnexion
               </button>

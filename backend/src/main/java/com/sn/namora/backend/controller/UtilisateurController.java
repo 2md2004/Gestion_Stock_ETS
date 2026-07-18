@@ -1,5 +1,6 @@
 package com.sn.namora.backend.controller;
 
+import com.sn.namora.backend.dto.request.ChangePasswordRequest;
 import com.sn.namora.backend.enums.Etat;
 import com.sn.namora.backend.enums.Role;
 import com.sn.namora.backend.model.Utilisateur;
@@ -59,5 +60,11 @@ public class UtilisateurController {
     @PatchMapping("/archiver/{id}")
     public ResponseEntity<Utilisateur> archiveUtilisateur(@PathVariable String id) {
         return new ResponseEntity<>(utilisateurService.archiveUtilisateur(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/changer-mot-de-passe")
+    public ResponseEntity<Void> changePassword(@PathVariable String id, @RequestBody ChangePasswordRequest request) {
+        utilisateurService.changePassword(id, request.getAncienMotDePasse(), request.getNouveauMotDePasse());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

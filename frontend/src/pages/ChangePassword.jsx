@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { URL_UTILISATEUR } from '../constants/server'
+import api from '../services/api'
+import { toast } from 'react-toastify'
 import changePasswordImg from '../assets/change_password.png'
-
+import '../styles/Profile.css'
+import '../styles/Login.css'
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
@@ -49,144 +51,139 @@ const ChangePassword = () => {
       setError('')
       setSuccess(false)
 
-      const token = sessionStorage.getItem('token')
       const userId = sessionStorage.getItem('userId')
 
-      const response = await fetch(
-        `${URL_UTILISATEUR}/${userId}/changer-mot-de-passe`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            ancienMotDePasse: oldPassword,
-            nouveauMotDePasse: newPassword
-          })
-        }
-      )
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => null)
-        setError(data?.message || "Ancien mot de passe incorrect")
-        return
-      }
+      await api.put(`/gerants/${userId}/changer-mot-de-passe`, {
+        ancienMotDePasse: oldPassword,
+        nouveauMotDePasse: newPassword
+      })
 
       setSuccess(true)
+      toast.success("Mot de passe modifié avec succès")
       setFormData({
         oldPassword: '',
         newPassword: '',
         confirmPassword: ''
       })
-    } catch {
-      setError("Impossible de contacter le serveur")
+    } catch (err) {
+      setError(err?.response?.data?.message || "Ancien mot de passe incorrect")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="forgotPage">
-      <div className="forgotIllustration">
-        <img
-          src={changePasswordImg}
-          alt="Modifier mot de passe"
-        />
-      </div>
-
-      <div className="forgotRight">
-        <div className="forgotCard">
-          <div className="text-center">
-            <h2 className="forgotTitle">
-              Modifier le mot de passe
-            </h2>
-            <p className="forgotText">
-              Entrez votre ancien mot de passe avant la modification.
-            </p>
+    <div className="profilePage">
+      <div
+        className="profileCard"
+        style={{ maxWidth: '900px' }}
+      >
+        <div className="row g-0">
+          <div className="col-lg-5 d-none d-lg-flex flex-column justify-content-between p-4 p-lg-5 loginLeftPanel" style={{ borderRadius: '18px 0 0 18px' }}>
+            <div className="flex-grow-1 d-flex align-items-center justify-content-center position-relative illustrationSection">
+              <img
+                src={changePasswordImg}
+                alt="Modifier mot de passe"
+                className="img-fluid illustration"
+              />
+            </div>
           </div>
 
-          {error && (
-            <div className="alert alert-danger small">
-              <i className="bi bi-exclamation-circle-fill me-2"></i>
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="alert alert-success small">
-              <i className="bi bi-check-circle-fill me-2"></i>
-              Mot de passe modifié avec succès.
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label small fw-semibold">
-                Ancien mot de passe
-              </label>
-              <input
-                type={showPassword ? "text" : "password"}
-                className="form-control"
-                name="oldPassword"
-                value={formData.oldPassword}
-                onChange={handleChange}
-                placeholder="••••••••"
-                disabled={loading}
-              />
+          <div className="col-12 col-lg-7 d-flex flex-column justify-content-center" style={{ padding: '35px 30px' }}>
+            <div className="text-center mb-4">
+              <h2 style={{ color: '#002050', fontSize: '20px', fontWeight: 700 }}>
+                Modifier le mot de passe
+              </h2>
+              <p style={{ color: '#64748b', fontSize: '13px', marginBottom: 0 }}>
+                Entrez votre ancien mot de passe avant la modification.
+              </p>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label small fw-semibold">
-                Nouveau mot de passe
-              </label>
-              <input
-                type={showPassword ? "text" : "password"}
-                className="form-control"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-                placeholder="••••••••"
-                disabled={loading}
-              />
-            </div>
+            {error && (
+              <div className="message error">
+                <i className="bi bi-exclamation-circle-fill"></i>
+                {error}
+              </div>
+            )}
 
-            <div className="mb-3">
-              <label className="form-label small fw-semibold">
-                Confirmer le nouveau mot de passe
-              </label>
-              <div className="input-group">
+            {success && (
+              <div className="message success">
+                <i className="bi bi-check-circle-fill"></i>
+                Mot de passe modifié avec succès.
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <div className="passwordField">
+                <label>
+                  <i className="bi bi-lock me-1" style={{ color: '#D09018' }}></i>
+                  Ancien mot de passe
+                </label>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="form-control"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
+                  name="oldPassword"
+                  value={formData.oldPassword}
                   onChange={handleChange}
                   placeholder="••••••••"
                   disabled={loading}
                 />
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
-                </button>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              className="btn btn-brand w-100 py-2 fw-semibold"
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="spinner-border spinner-border-sm"></span>
-              ) : (
-                "Modifier le mot de passe"
-              )}
-            </button>
-          </form>
+              <div className="passwordField">
+                <label>
+                  <i className="bi bi-lock-fill me-1" style={{ color: '#D09018' }}></i>
+                  Nouveau mot de passe
+                </label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="newPassword"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="passwordField">
+                <label>
+                  <i className="bi bi-shield-lock me-1" style={{ color: '#D09018' }}></i>
+                  Confirmer le nouveau mot de passe
+                </label>
+                <div className="passwordInput">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    disabled={loading}
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="passwordButton mt-3"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="spinner-border spinner-border-sm"></span>
+                ) : (
+                  <>
+                    <i className="bi bi-check-circle me-2"></i>
+                    Modifier le mot de passe
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

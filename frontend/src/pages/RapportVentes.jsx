@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { getRapportVentes } from "../services/VenteService";
-import "../styles/RapportVentes.css";
 
 const TYPES = [
   { value: "hebdomadaire", label: "Hebdomadaire", icon: "bi-calendar-week" },
@@ -115,13 +114,28 @@ const RapportVentes = () => {
         {/* En-tête */}
         <div className="rapportHeader">
           <div className="rapportBoutiqueInfo">
-        <img src={logoEBS} alt="Logo EBS" className="rapportLogoEBS" />
-       <div>
-    <h2>{infosBoutique?.nomBoutique || "ETS Beugue Serigne Mansour SY"}</h2>
-              <p>{infosBoutique?.adresse}</p>
-              <p>
-                {infosBoutique?.telephone} {infosBoutique?.email && `• ${infosBoutique.email}`}
-              </p>
+            <img
+              src={infosBoutique?.logoBase64 || logoEBS}
+              alt="Logo boutique"
+              className="rapportLogoEBS"
+            />
+            <div>
+              <h2>{infosBoutique?.nomBoutique || "ETS Beugue Serigne Mansour SY"}</h2>
+              {infosBoutique?.adresse && <p>{infosBoutique.adresse}</p>}
+              {(infosBoutique?.ninea || infosBoutique?.rccm) && (
+                <p>
+                  {infosBoutique.ninea && `NINEA: ${infosBoutique.ninea}`}
+                  {infosBoutique.ninea && infosBoutique.rccm && " • "}
+                  {infosBoutique.rccm && `RCCM: ${infosBoutique.rccm}`}
+                </p>
+              )}
+              {(infosBoutique?.telephone || infosBoutique?.email) && (
+                <p>
+                  {infosBoutique.telephone}
+                  {infosBoutique.telephone && infosBoutique.email && " • "}
+                  {infosBoutique.email}
+                </p>
+              )}
             </div>
           </div>
           <div className="rapportTitreBloc">

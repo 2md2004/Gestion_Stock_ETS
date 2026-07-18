@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { URL_UTILISATEUR } from '../constants/server'
+import api from '../services/api'
 import '../styles/Profile.css'
 
 const Profile = () => {
@@ -10,24 +10,11 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = sessionStorage.getItem('token')
         const userId = sessionStorage.getItem('userId')
-
-        const response = await fetch(`${URL_UTILISATEUR}/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-
-        if (!response.ok) {
-          setError("Impossible de charger le profil")
-          return
-        }
-
-        const data = await response.json()
-        setProfile(data)
+        const response = await api.get(`/gerants/${userId}`)
+        setProfile(response.data)
       } catch (error) {
-        setError("Impossible de contacter le serveur")
+        setError("Impossible de charger le profil")
       } finally {
         setLoading(false)
       }

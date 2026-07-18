@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface DetailsVenteRepository extends JpaRepository<DetailsVente, String> {
     @Query("""
@@ -14,5 +15,12 @@ public interface DetailsVenteRepository extends JpaRepository<DetailsVente, Stri
             WHERE v.vente.date = :date
     """)
     String getMaxVenteJour(@Param("date") LocalDate date);
+
+    @Query("""
+            SELECT dv FROM DetailsVente dv
+            JOIN FETCH dv.produit p
+            WHERE dv.vente.date BETWEEN :debut AND :fin
+    """)
+    List<DetailsVente> findByDateBetween(@Param("debut") LocalDate debut, @Param("fin") LocalDate fin);
 
 }

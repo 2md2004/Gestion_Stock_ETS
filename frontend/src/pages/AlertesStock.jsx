@@ -3,7 +3,7 @@ import "../styles/Produit.css";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import EmptyImg from "../assets/Empty (1).gif";
-import { getProduitsStockFaible, rechercherProduits } from "../services/ProduitService";
+import {getProduitsStockFaible,rechercherProduits,reapprovisionnementProduit} from "../services/ProduitService";
 import useDebounce from "../hooks/useDebounce";
 
 const AlertesStock = () => {
@@ -83,25 +83,36 @@ const AlertesStock = () => {
         setQuantite("");
     };
 
-    const handleReapprovisionner = () => {
-        if (!quantite || Number(quantite) <= 0) {
-            toast.warning("Veuillez saisir une quantité valide");
-            return;
-        }
-        setSubmitting(true);
-        setTimeout(() => {
-            toast.success(`${quantite} unité(s) ajoutée(s) au stock de "${selectedProduit.nom}"`);
-            setProduits((prev) =>
-                prev.map((p) =>
-                    p.id === selectedProduit.id ? { ...p, quantite: p.quantite + Number(quantite) } : p
-                )
-            );
-            setSelectedProduit(null);
-            setQuantite("");
-            setSubmitting(false);
-        }, 500);
-    };
+   const handleReapprovisionner = async () => {
+       if (!quantite || Number(quantite) <= 0) {
+           toast.warning("Veuillez saisir une quantité valide");
+           return;
+       }
 
+       setSubmitting(true);
+
+       try {
+           const dto = {
+               idProduit: selectedProduit.id,
+               quantite: Number(quantite),
+           };
+
+           await reapprovisionnementProduit(selectedProduit.id, dto);
+
+           toast.success(
+               `${quantite} unité(s) ajoutée(s) au stock de "${selectedProduit.nom}"`
+           );
+
+           setSelectedProduit(null);
+           setQuantite("");
+           loadPage(currentPage);
+       } catch (error) {
+           console.error(error);
+           toast.error("Erreur lors du réapprovisionnement");
+       } finally {
+           setSubmitting(false);
+       }
+   };
     const renderPages = () => {
         return Array.from({ length: pages }, (_, i) => (
             <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>

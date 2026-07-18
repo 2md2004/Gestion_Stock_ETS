@@ -5,9 +5,11 @@ import com.sn.namora.backend.dto.RapportVenteResponse;
 import com.sn.namora.backend.dto.request.DetailsVenteRequest;
 import com.sn.namora.backend.dto.request.VenteRequest;
 import com.sn.namora.backend.exceptions.VenteNotFoundException;
+import com.sn.namora.backend.model.Client;
 import com.sn.namora.backend.model.DetailsVente;
 import com.sn.namora.backend.model.Produit;
 import com.sn.namora.backend.model.Vente;
+import com.sn.namora.backend.repository.ClientRepository;
 import com.sn.namora.backend.repository.DetailsVenteRepository;
 import com.sn.namora.backend.repository.ProduitRepository;
 import com.sn.namora.backend.repository.VenteRepository;
@@ -24,10 +26,7 @@ import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,7 @@ public class VenteService {
     private final ProduitRepository produitRepository;
     private final DetailsVenteService detailsVenteService;
     private final DetailsVenteRepository detailsVenteRepository;
+    private final ClientRepository clientRepository;
     public Vente createVente(){
         Vente vente = new Vente();
         vente.setId(generateId());
@@ -48,22 +48,41 @@ public class VenteService {
         Vente vente = new Vente();
         vente.setId(generateId());
         vente.setDate(dto.getDate() != null ? dto.getDate() : LocalDate.now());
+
+        if (dto.getClientId() != null) {
+            Client client = clientRepository.findById(dto.getClientId())
+                    .orElseThrow(() -> new RuntimeException("Client introuvable : " + dto.getClientId()));
+            vente.setClient(client);
+        }
+
         venteRepository.save(vente);
 
         int total = 0;
         List<DetailsVente> details = new ArrayList<>();
 
-
         List<String> detailIds = generateDetailIds(dto.getDetailsVenteRequests().size());
 
         for (int i = 0; i < dto.getDetailsVenteRequests().size(); i++) {
             DetailsVenteRequest ligne = dto.getDetailsVenteRequests().get(i);
-            Produit produit = produitRepository.findById(ligne.getIdProduit())
-                    .orElseThrow(() ->
-                            new RuntimeException(
-                                    "Produit introuvable : " + ligne.getIdProduit()
-                            )
-                    );
+
+            Produit produit;
+            if (ligne.isNouveauProduit()) {
+                produit = new Produit();
+                produit.setId(UUID.randomUUID().toString().substring(0, 8));
+                produit.setNom(ligne.getNomNouveauProduit());
+                produit.setPrixAchat(ligne.getPrixAchat());
+                produit.setPrixVente(ligne.getPrixVente());
+                produit.setQuantite(ligne.getStockInitial());
+                if (ligne.getCategorieId() != null) {
+                    com.sn.namora.backend.model.Categorie cat = new com.sn.namora.backend.model.Categorie();
+                    cat.setId(ligne.getCategorieId());
+                    produit.setCategorie(cat);
+                }
+                produit = produitRepository.save(produit);
+            } else {
+                produit = produitRepository.findById(ligne.getIdProduit())
+                        .orElseThrow(() -> new RuntimeException("Produit introuvable : " + ligne.getIdProduit()));
+            }
 
             DetailsVente detail = new DetailsVente();
             detail.setId(detailIds.get(i));
@@ -72,9 +91,7 @@ public class VenteService {
             detail.setQuantiteVendu(ligne.getQuantiteVendu());
             details.add(detail);
 
-            produit.setQuantite(
-                    produit.getQuantite() - ligne.getQuantiteVendu()
-            );
+            produit.setQuantite(produit.getQuantite() - ligne.getQuantiteVendu());
             produitRepository.save(produit);
             total += produit.getPrixVente().intValue() * ligne.getQuantiteVendu();
         }
@@ -208,10 +225,39 @@ public class VenteService {
                 ? totalVentes.divide(BigDecimal.valueOf(nombreVentes), 2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
 
-        // TODO : à remplacer dès que la relation Vente <-> Produit (DetailsVente) sera fusionnée
+        List<DetailsVente> detailsPeriode = detailsVenteRepository.findByDateBetween(debut, fin);
+
+        Map<String, Integer> quantitesParProduit = new LinkedHashMap<>();
+        Map<String, String> nomsParProduit = new LinkedHashMap<>();
+        BigDecimal beneficeTotal = BigDecimal.ZERO;
+
+        for (DetailsVente dv : detailsPeriode) {
+            Produit p = dv.getProduit();
+            if (p == null) continue;
+
+            String produitId = p.getId();
+            quantitesParProduit.merge(produitId, dv.getQuantiteVendu(), Integer::sum);
+            nomsParProduit.putIfAbsent(produitId, p.getNom());
+
+            BigDecimal prixVente = p.getPrixVente() != null ? p.getPrixVente() : BigDecimal.ZERO;
+            BigDecimal prixAchat = p.getPrixAchat() != null ? p.getPrixAchat() : BigDecimal.ZERO;
+            beneficeTotal = beneficeTotal.add(
+                    prixVente.subtract(prixAchat).multiply(BigDecimal.valueOf(dv.getQuantiteVendu()))
+            );
+        }
+
         String produitPlusVendu = null;
         Integer quantiteProduitPlusVendu = 0;
-        BigDecimal beneficeTotal = BigDecimal.ZERO;
+
+        if (!quantitesParProduit.isEmpty()) {
+            Map.Entry<String, Integer> maxEntry = quantitesParProduit.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .orElse(null);
+            if (maxEntry != null) {
+                produitPlusVendu = nomsParProduit.get(maxEntry.getKey());
+                quantiteProduitPlusVendu = maxEntry.getValue();
+            }
+        }
 
         return new RapportVenteResponse(
                 type, debut, fin, totalVentes, nombreVentes, venteMoyenne, points,

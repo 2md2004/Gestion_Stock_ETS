@@ -6,6 +6,7 @@
     left: 0;
     z-index: 100;
     border-color: #e2e8f0 !important;
+    transition: transform 0.3s ease;
 }
 
 /* LOGO */
@@ -100,6 +101,44 @@
 
 .sidebarLogout:hover { background: #fff5f5; }
 
-@media (max-width: 768px) {
-    .sidebar { position: relative; width: 100%; height: auto; }
+/* ===== MOBILE : drawer glissant ===== */
+@media (max-width: 991px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1050;
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+
+    .sidebar.sidebarOpen {
+        transform: translateX(0);
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Overlay derrière le sidebar sur mobile */
+.sidebarOverlay {
+    display: none;
+}
+
+@media (max-width: 991px) {
+    .sidebarOverlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1040;
+        animation: fadeIn 0.2s ease;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
