@@ -8,6 +8,7 @@ import { createClient } from "../services/ClientService";
 import { getCategories } from "../services/CategorieService";
 import useDebounce from "../hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
+import { useBadges } from "../context/BadgeContext";
 
 const AddDetailsVente = () => {
     const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ const AddDetailsVente = () => {
     const [showResults, setShowResults] = useState(false);
     const [lignes, setLignes] = useState([]);
     const navigate = useNavigate();
+    const { refreshBadges } = useBadges();
 
     const [showClientModal, setShowClientModal] = useState(false);
     const [clientPrenom, setClientPrenom] = useState("");
@@ -208,6 +210,7 @@ const AddDetailsVente = () => {
             };
             await createVente(dto);
             toast.success("Vente enregistrée avec succès");
+            await refreshBadges();
             navigate("/ventes");
             setLignes([]);
             setClientPrenom("");

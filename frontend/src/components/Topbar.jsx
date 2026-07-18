@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Topbar.css'
-import { getStatitisques } from '../services/DashboardService'
-import { getProduitsStockFaible } from '../services/ProduitService'
+import { useBadges } from '../context/BadgeContext'
 
 const notifIcons = {
   danger: 'bi-exclamation-circle-fill text-danger',
@@ -13,8 +12,7 @@ const notifIcons = {
 const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
-  const [notifSeen, setNotifSeen] = useState(false)
-  const [notifs, setNotifs] = useState([])
+  const { notifs, notifSeen, setNotifSeen } = useBadges()
   const menuRef = useRef(null)
   const notifRef = useRef(null)
   const navigate = useNavigate()
@@ -38,46 +36,6 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
     setMenuOpen(false)
     navigate('/modifier-mot-de-passe')
   }
-
-  useEffect(() => {
-    const loadNotifications = async () => {
-      try {
-        const [stats, produitsFaible] = await Promise.all([
-          getStatitisques(),
-          getProduitsStockFaible(0, 5, 'nom').then((data) => data.content || []),
-        ])
-
-        const newNotifs = []
-
-        if (stats.nbreVentesDuJour > 0) {
-          newNotifs.push({
-            id: 'vente-jour',
-            type: 'success',
-            title: 'Ventes du jour',
-            message: `${stats.nbreVentesDuJour} vente(s) aujourd'hui.`,
-            time: "Aujourd'hui",
-          })
-        }
-
-        produitsFaible.forEach((produit) => {
-          newNotifs.push({
-            id: `stock-${produit.id}`,
-            type: 'danger',
-            title: 'Stock faible',
-            message: `"${produit.nom}" n'a plus que ${produit.quantite} unité(s) en stock.`,
-            time: 'En cours',
-          })
-        })
-
-        setNotifs(newNotifs.slice(0, 3))
-        setNotifSeen(false)
-      } catch (error) {
-        console.error('Erreur chargement notifications:', error)
-      }
-    }
-
-    loadNotifications()
-  }, [])
 
   useEffect(() => {
     const handleClickOutside = (e) => {

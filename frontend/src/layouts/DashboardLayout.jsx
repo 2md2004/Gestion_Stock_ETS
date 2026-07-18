@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
+import { BadgeProvider } from '../context/BadgeContext'
 import '../styles/DashboardLayout.css'
 
 const pageTitles = {
@@ -51,20 +52,22 @@ const DashboardLayout = () => {
   const title = getPageTitle(location.pathname)
 
   return (
-    <div className="dashboardLayout min-vh-100">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <BadgeProvider>
+      <div className="dashboardLayout min-vh-100">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {sidebarOpen && (
-        <div className="sidebarOverlay" onClick={() => setSidebarOpen(false)} />
-      )}
+        {sidebarOpen && (
+          <div className="sidebarOverlay" onClick={() => setSidebarOpen(false)} />
+        )}
 
-      <div className="dashboardMain min-vh-100 d-flex flex-column">
-        <Topbar title={title} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="dashboardContent flex-grow-1 p-3 p-md-4">
-          <Outlet />
-        </main>
+        <div className="dashboardMain min-vh-100 d-flex flex-column">
+          <Topbar title={title} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+          <main className="dashboardContent flex-grow-1 p-3 p-md-4">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </BadgeProvider>
   )
 }
 

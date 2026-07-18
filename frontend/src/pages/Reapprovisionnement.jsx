@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import EmptyImg from "../assets/Empty (1).gif";
 import { getProduitsPerPage, rechercherProduits, reapprovisionnementProduit } from "../services/ProduitService";
 import useDebounce from "../hooks/useDebounce";
+import { useBadges } from "../context/BadgeContext";
 
 const Reapprovisionnement = () => {
   const [produits, setProduits] = useState([]);
@@ -19,7 +20,8 @@ const Reapprovisionnement = () => {
   const [selectedProduit, setSelectedProduit] = useState(null);
   const [quantite, setQuantite] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0); // ✅ Pour forcer le rechargement
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { refreshBadges } = useBadges();
 
   const loadPage = async (page) => {
     setLoading(true);
@@ -126,6 +128,7 @@ const Reapprovisionnement = () => {
       toast.success(`${quantite} unité(s) ajoutée(s) au stock de "${selectedProduit.nom}"`);
       setSelectedProduit(null);
       setQuantite("");
+      await refreshBadges();
       
       // ✅ Optionnel: Forcer un rechargement après un délai
       // setRefreshTrigger(prev => prev + 1);

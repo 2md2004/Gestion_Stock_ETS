@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import EmptyImg from "../assets/Empty (1).gif";
 import {getProduitsStockFaible,rechercherProduits,reapprovisionnementProduit} from "../services/ProduitService";
 import useDebounce from "../hooks/useDebounce";
+import { useBadges } from "../context/BadgeContext";
 
 const AlertesStock = () => {
     const [produits, setProduits] = useState([]);
@@ -19,6 +20,7 @@ const AlertesStock = () => {
     const [selectedProduit, setSelectedProduit] = useState(null);
     const [quantite, setQuantite] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const { refreshBadges } = useBadges();
 
     const loadPage = async (page) => {
         setLoading(true);
@@ -106,6 +108,7 @@ const AlertesStock = () => {
            setSelectedProduit(null);
            setQuantite("");
            loadPage(currentPage);
+           await refreshBadges();
        } catch (error) {
            console.error(error);
            toast.error("Erreur lors du réapprovisionnement");

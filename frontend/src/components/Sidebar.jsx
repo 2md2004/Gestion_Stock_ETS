@@ -2,8 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import logo from '../assets/logo_EBS.png'
 import '../styles/Sidebar.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import { useEffect, useState } from 'react'
-import { getStatitisques } from '../services/DashboardService'
+import { useBadges } from '../context/BadgeContext'
 
 const MenuTitle = ({ children }) => (
   <div className="menuTitle text-uppercase text-secondary fw-bold px-2 mt-3 mb-1">
@@ -13,7 +12,7 @@ const MenuTitle = ({ children }) => (
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate()
-  const [stockFaible, setStockFaible] = useState(0)
+  const { stockFaible } = useBadges()
 
   const handleLogout = () => {
     sessionStorage.removeItem('token')
@@ -23,12 +22,6 @@ const Sidebar = ({ isOpen, onClose }) => {
   const handleLinkClick = () => {
     onClose?.()
   }
-
-  useEffect(() => {
-    getStatitisques()
-      .then((data) => setStockFaible(data.stockFaible || 0))
-      .catch(() => {})
-  }, [])
 
   return (
     <aside className={`sidebar d-flex flex-column bg-white border-end vh-100 p-3 ${isOpen ? 'sidebarOpen' : ''}`}>

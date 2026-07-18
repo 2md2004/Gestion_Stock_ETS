@@ -7,6 +7,7 @@ import { createProduit, getProduitsPerPage, deleteProduit, updateProduit, recher
 import AddProduit from "../components/AddProduit";
 import EditProduit from "../components/EditProduit";
 import useDebounce from "../hooks/useDebounce";
+import { useBadges } from "../context/BadgeContext";
 
 const Produit = () => {
     const [produits, setProduits] = useState([]);
@@ -18,6 +19,7 @@ const Produit = () => {
     const searchDebounce = useDebounce(search, 500);
     const [resultats, setResultats] = useState([]);
     const [showResults, setShowResults] = useState(false);
+    const { refreshBadges } = useBadges();
 
     const handleChangeSearch = (e) => {
         const inputValue = e.target.value;
@@ -62,6 +64,7 @@ const Produit = () => {
             await createProduit(produit);
             toast.success("Produit créé avec succès");
             loadPage(currentPage);
+            await refreshBadges();
         } catch (error) {
             toast.error(
                 error?.response?.data?.message || "Erreur lors de l'ajout"
@@ -77,6 +80,7 @@ const Produit = () => {
             await updateProduit(id, produit);
             toast.success("Produit modifié avec succès");
             loadPage(currentPage);
+            await refreshBadges();
         } catch (error) {
             toast.error(
                 error?.response?.data?.message || "Erreur lors de la modification"
@@ -92,6 +96,7 @@ const Produit = () => {
             await deleteProduit(id);
             toast.success("Produit supprimé avec succès");
             loadPage(currentPage);
+            await refreshBadges();
         } catch (error) {
             toast.error(
                 error?.response?.data?.message || "Erreur lors de la suppression"
