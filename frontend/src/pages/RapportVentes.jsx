@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { getRapportVentes } from "../services/VenteService";
+import { getBoutique } from "../services/BoutiqueService";
+import { API_URL } from "../constants/server";
 
 const TYPES = [
   { value: "hebdomadaire", label: "Hebdomadaire", icon: "bi-calendar-week" },
@@ -39,8 +41,16 @@ const RapportVentes = () => {
   const graphiqueRef = useRef(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("infosBoutique");
-    if (saved) setInfosBoutique(JSON.parse(saved));
+    getBoutique()
+      .then((data) => {
+        if (data && data.id) {
+          setInfosBoutique({
+            ...data,
+            logoUrl: data.logoPath ? `${API_URL}images/${data.logoPath}` : null,
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const chargerRapport = useCallback(async () => {
@@ -115,12 +125,12 @@ const RapportVentes = () => {
         <div className="rapportHeader">
           <div className="rapportBoutiqueInfo">
             <img
-              src={infosBoutique?.logoBase64 || logoEBS}
+              src={infosBoutique?.logoUrl || logoEBS}
               alt="Logo boutique"
               className="rapportLogoEBS"
             />
             <div>
-              <h2>{infosBoutique?.nomBoutique || "ETS Beugue Serigne Mansour SY"}</h2>
+              <h2>{infosBoutique?.nom || "ETS Beugue Serigne Mansour SY"}</h2>
               {infosBoutique?.adresse && <p>{infosBoutique.adresse}</p>}
               {(infosBoutique?.ninea || infosBoutique?.rccm) && (
                 <p>

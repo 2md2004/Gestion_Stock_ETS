@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import EmptyImg from "../assets/Empty (1).gif";
-import {  getVentesPerPage, deleteVente, rechercherVentes } from "../services/VenteService";
+import { getVentesPerPage, getVenteById, deleteVente, rechercherVentes } from "../services/VenteService";
+import { getBoutique } from "../services/BoutiqueService";
+import { API_URL } from "../constants/server";
 import useDebounce from "../hooks/useDebounce";
 import { useLocation, useNavigate } from "react-router-dom";
+import FactureVente from "../components/FactureVente";
+import { exporterElementEnPdf, withLogoUrl } from "../utils/pdfExport";
 
 const Vente = () => {
     const [ventes, setVentes] = useState([]);
@@ -18,6 +22,13 @@ const Vente = () => {
     const [showResults, setShowResults] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+
+    // --- Etats liés à l'export PDF ---
+    const [boutique, setBoutique] = useState(null);
+    const [exportVente, setExportVente] = useState(null);
+    const [exportLoadingId, setExportLoadingId] = useState(null);
+    const factureRef = useRef(null);
+
     const handleChangeSearch = (e) => {
         const inputValue = e.target.value;
         setSearch(inputValue);
@@ -55,8 +66,6 @@ const Vente = () => {
         }
     };
 
-   
-    
     const deleteVenteById = async (id) => {
         try {
             setLoading(true);
@@ -105,6 +114,34 @@ const Vente = () => {
         loadPage(0);
     }, []);
 
+    // Récupère les infos boutique une fois (utilisées pour l'en-tête du PDF)
+    useEffect(() => {
+        getBoutique()
+            .then((data) => setBoutique(withLogoUrl(data, API_URL)))
+            .catch(() => {});
+    }, []);
+
+    // Se déclenche quand exportVente est prêt -> capture le rendu caché (identique à l'œil)
+    useEffect(() => {
+        if (!exportVente) return;
+
+        const genererPdf = async () => {
+            try {
+                await exporterElementEnPdf(factureRef.current, `facture-vente-${exportVente.id}.pdf`);
+                toast.success("PDF téléchargé avec succès");
+            } catch (error) {
+                console.error("Erreur export PDF:", error);
+                toast.error("Erreur lors de la génération du PDF");
+            } finally {
+                setExportVente(null);
+                setExportLoadingId(null);
+            }
+        };
+
+        const t = setTimeout(genererPdf, 50); // laisse le DOM se peindre avant capture
+        return () => clearTimeout(t);
+    }, [exportVente]);
+
     const clearSearch = () => {
         setSearch("");
         setResultats([]);
@@ -112,7 +149,6 @@ const Vente = () => {
         setIsSearching(false);
         loadPage(0);
     };
-
 
     const formatDate = (dateString) => {
         if (!dateString) return "—";
@@ -131,20 +167,30 @@ const Vente = () => {
         navigate(`${location.pathname}/${id}`);
     };
 
-    // --- Export PDF (stub : à brancher sur un endpoint /ventes/{id}/pdf) ---
+    // --- Export PDF : récupère le détail complet puis déclenche la capture identique à l'œil ---
     const exporterVentePdf = async (vente) => {
-        toast.info(`Génération du PDF pour la vente #${vente.id?.substring ? vente.id.substring(0, 6) : vente.id}...`);
-        // TODO: brancher un vrai service d'export, ex:
-        // const blob = await exporterVentePdfService(vente.id);
-        // const url = window.URL.createObjectURL(blob);
-        // const a = document.createElement("a");
-        // a.href = url;
-        // a.download = `vente-${vente.id}.pdf`;
-        // a.click();
+        try {
+            setExportLoadingId(vente.id);
+            const detail = await getVenteById(vente.id);
+            setExportVente(detail);
+        } catch (error) {
+            console.error("Erreur export PDF:", error);
+            toast.error("Erreur lors de la génération du PDF");
+            setExportLoadingId(null);
+        }
     };
 
     return (
         <div className="container">
+            {/* Rendu caché utilisé uniquement pour générer le PDF - identique à la vue "œil" */}
+            <div style={{ position: "fixed", top: 0, left: "-9999px", zIndex: -1 }}>
+                {exportVente && (
+                    <div style={{ width: "800px" }}>
+                        <FactureVente ref={factureRef} vente={exportVente} boutique={boutique} />
+                    </div>
+                )}
+            </div>
+
             <div className="row">
                 <div className="col-md-12">
                     <div className="d-flex justify-content-between align-items-center mb-3">
@@ -236,15 +282,12 @@ const Vente = () => {
                                                 <tr>
                                                     <th className="py-3 ps-4">Vente</th>
                                                     <th className="py-3">Date</th>
-  
                                                     <th className="py-3">Montant</th>
-                        
                                                     <th className="py-3 text-center">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {resultats.map((vente) => {
-                                                    
                                                     return (
                                                         <tr key={vente.id} className="border-bottom">
                                                             <td className="ps-4 fw-semibold">
@@ -256,14 +299,12 @@ const Vente = () => {
                                                                     {formatDate(vente.date)}
                                                                 </div>
                                                             </td>
-                                                           
                                                             <td>
                                                                 <div className="d-flex align-items-center">
                                                                     <i className="bi bi-currency-franc me-2 text-success"></i>
                                                                     <span className="fw-semibold">{vente.montantTotal?.toLocaleString()} FCFA</span>
                                                                 </div>
                                                             </td>
-                                                            
                                                             <td>
                                                                 <div className="d-flex justify-content-center gap-1">
                                                                     <button
@@ -278,9 +319,14 @@ const Vente = () => {
                                                                         className="btn btn-sm btn-outline-secondary"
                                                                         onClick={() => exporterVentePdf(vente)}
                                                                         title="Exporter en PDF"
+                                                                        disabled={exportLoadingId === vente.id}
                                                                         style={{ width: "32px", height: "32px", padding: 0 }}
                                                                     >
-                                                                        <i className="bi bi-file-earmark-pdf"></i>
+                                                                        {exportLoadingId === vente.id ? (
+                                                                            <span className="spinner-border spinner-border-sm" style={{ width: "12px", height: "12px" }}></span>
+                                                                        ) : (
+                                                                            <i className="bi bi-file-earmark-pdf"></i>
+                                                                        )}
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-sm btn-outline-danger"
@@ -381,15 +427,12 @@ const Vente = () => {
                                                     <tr>
                                                         <th className="py-3 ps-4">Vente</th>
                                                         <th className="py-3">Date</th>
-                                      
                                                         <th className="py-3">Montant total</th>
-
                                                         <th className="py-3 text-center">Actions</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {ventes.map((vente) => {
-                                                      
                                                         return (
                                                             <tr key={vente.id} className="border-bottom">
                                                                 <td className="ps-4 fw-semibold">
@@ -401,14 +444,12 @@ const Vente = () => {
                                                                         {formatDate(vente.date)}
                                                                     </div>
                                                                 </td>
-                                                               
                                                                 <td>
                                                                     <div className="d-flex align-items-center">
                                                                         <i className="bi bi-currency-franc me-2 text-success"></i>
                                                                         <span className="fw-semibold">{vente.montantTotal?.toLocaleString()} FCFA</span>
                                                                     </div>
                                                                 </td>
-                                                              
                                                                 <td>
                                                                     <div className="d-flex justify-content-center gap-1">
                                                                         <button
@@ -423,9 +464,14 @@ const Vente = () => {
                                                                             className="btn btn-sm btn-outline-secondary"
                                                                             onClick={() => exporterVentePdf(vente)}
                                                                             title="Exporter en PDF"
+                                                                            disabled={exportLoadingId === vente.id}
                                                                             style={{ width: "32px", height: "32px", padding: 0 }}
                                                                         >
-                                                                            <i className="bi bi-file-earmark-pdf"></i>
+                                                                            {exportLoadingId === vente.id ? (
+                                                                                <span className="spinner-border spinner-border-sm" style={{ width: "12px", height: "12px" }}></span>
+                                                                            ) : (
+                                                                                <i className="bi bi-file-earmark-pdf"></i>
+                                                                            )}
                                                                         </button>
                                                                         <button
                                                                             className="btn btn-sm btn-outline-danger"

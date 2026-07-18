@@ -1,29 +1,48 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { getBoutique, saveBoutique, uploadLogo } from "../services/BoutiqueService";
+import { API_URL } from "../constants/server";
 import "../styles/Profile.css";
 
 const InfosBoutique = () => {
   const [infos, setInfos] = useState({
-    logo: null,
-    nomBoutique: "",
+    nom: "",
     ninea: "",
     rccm: "",
     telephone: "",
     email: "",
     adresse: "",
+    logoPath: null,
   });
   const [logoPreview, setLogoPreview] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("infosBoutique");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setInfos((prev) => ({ ...prev, ...parsed, logo: null }));
-      if (parsed.logoBase64) {
-        setLogoPreview(parsed.logoBase64);
-      }
-    }
+    loadBoutique();
   }, []);
+
+  const loadBoutique = async () => {
+    try {
+      const data = await getBoutique();
+      if (data && data.id) {
+        setInfos({
+          nom: data.nom || "",
+          ninea: data.ninea || "",
+          rccm: data.rccm || "",
+          telephone: data.telephone || "",
+          email: data.email || "",
+          adresse: data.adresse || "",
+          logoPath: data.logoPath || null,
+        });
+        if (data.logoPath) {
+          setLogoPreview(`${API_URL}images/${data.logoPath}`);
+        }
+      }
+    } catch (error) {
+      console.error("Erreur chargement boutique:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,10 +52,10 @@ const InfosBoutique = () => {
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setLogoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result);
-        setInfos((prev) => ({ ...prev, logo: reader.result }));
       };
       reader.readAsDataURL(file);
     }
@@ -44,15 +63,35 @@ const InfosBoutique = () => {
 
   const handleRemoveLogo = () => {
     setLogoPreview(null);
-    setInfos((prev) => ({ ...prev, logo: null }));
+    setLogoFile(null);
+    setInfos((prev) => ({ ...prev, logoPath: null }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const toSave = { ...infos, logoBase64: logoPreview };
-    delete toSave.logo;
-    localStorage.setItem("infosBoutique", JSON.stringify(toSave));
-    toast.success("Informations de la boutique enregistrées");
+    setLoading(true);
+    try {
+      let logoPath = infos.logoPath;
+
+      if (logoFile) {
+        const logoResult = await uploadLogo(logoFile);
+        logoPath = logoResult.filename;
+      }
+
+      await saveBoutique({
+        ...infos,
+        logoPath,
+      });
+
+      toast.success("Informations de la boutique enregistrées");
+      loadBoutique();
+      setLogoFile(null);
+    } catch (error) {
+      console.error("Erreur sauvegarde:", error);
+      toast.error("Erreur lors de l'enregistrement");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -133,8 +172,8 @@ const InfosBoutique = () => {
                 </label>
                 <input
                   type="text"
-                  name="nomBoutique"
-                  value={infos.nomBoutique}
+                  name="nom"
+                  value={infos.nom}
                   onChange={handleChange}
                   placeholder="Ex: Boutik ETS"
                 />
@@ -215,9 +254,10 @@ const InfosBoutique = () => {
           <button
             type="submit"
             className="passwordButton mt-3"
+            disabled={loading}
           >
-            <i className="bi bi-check-circle me-2"></i>
-            Enregistrer
+            <i className={`bi ${loading ? "bi-hourglass-split" : "bi-check-circle"} me-2`}></i>
+            {loading ? "Enregistrement..." : "Enregistrer"}
           </button>
         </form>
       </div>

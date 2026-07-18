@@ -13,6 +13,7 @@ const notifIcons = {
 const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
+  const [notifSeen, setNotifSeen] = useState(false)
   const [notifs, setNotifs] = useState([])
   const menuRef = useRef(null)
   const notifRef = useRef(null)
@@ -69,6 +70,7 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
         })
 
         setNotifs(newNotifs.slice(0, 3))
+        setNotifSeen(false)
       } catch (error) {
         console.error('Erreur chargement notifications:', error)
       }
@@ -123,13 +125,18 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
 
         <div className="notificationWrapper" ref={notifRef}>
           <button
-            onClick={() => setNotifOpen(!notifOpen)}
+            onClick={() => {
+              setNotifOpen(!notifOpen)
+              if (!notifOpen) setNotifSeen(true)
+            }}
             className="notification position-relative border-0 rounded-3 bg-light d-flex align-items-center justify-content-center"
           >
             <i className="bi bi-bell"></i>
-            <span className="badge rounded-pill position-absolute top-0 start-100 translate-middle">
-              {notifs.length}
-            </span>
+            {!notifSeen && notifs.length > 0 && (
+              <span className="badge rounded-pill position-absolute top-0 start-100 translate-middle">
+                {notifs.length}
+              </span>
+            )}
           </button>
 
           {notifOpen && (
