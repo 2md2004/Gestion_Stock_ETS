@@ -8,7 +8,6 @@ import { createClient } from "../services/ClientService";
 import { getCategories } from "../services/CategorieService";
 import useDebounce from "../hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
-import { useBadges } from "../context/BadgeContext";
 
 const AddDetailsVente = () => {
     const [loading, setLoading] = useState(false);
@@ -19,7 +18,6 @@ const AddDetailsVente = () => {
     const [showResults, setShowResults] = useState(false);
     const [lignes, setLignes] = useState([]);
     const navigate = useNavigate();
-    const { refreshBadges } = useBadges();
 
     const [showClientModal, setShowClientModal] = useState(false);
     const [clientPrenom, setClientPrenom] = useState("");
@@ -87,7 +85,7 @@ const AddDetailsVente = () => {
         setLignes((prev) => {
             const existante = prev.find((l) => l.idProduit === produit.id);
             if (existante) {
-                if (existante.quantite + 1 > produit.quantite) {
+                if (existante.quantite + 1 > existante.stockMax) {
                     toast.warning(`Stock insuffisant pour ${produit.nom}`);
                     return prev;
                 }
@@ -104,7 +102,8 @@ const AddDetailsVente = () => {
                     nom: produit.nom,
                     prixUnitaireVente: produit.prixVente,
                     quantite: 1,
-                    stockDisponible: produit.quantite,
+                    // Plafond fixé une fois pour toutes à l'ajout (stock total disponible pour ce produit)
+                    stockMax: produit.quantite,
                 },
             ];
         });
@@ -132,7 +131,7 @@ const AddDetailsVente = () => {
                 nom: nom,
                 prixUnitaireVente: Number(prixVente),
                 quantite: Number(quantiteVendue),
-                stockDisponible: Number(stockInitial),
+                stockMax: Number(stockInitial),
                 nouveauProduit: true,
                 nomNouveauProduit: nom,
                 categorieId: Number(categorieId),
@@ -145,12 +144,44 @@ const AddDetailsVente = () => {
         toast.success(`${nom} ajouté au panier`);
     };
 
-    const modifierQuantite = (idProduit, quantite) => {
+    // Saisie libre pendant la frappe : on accepte la valeur brute (même vide ou
+    // temporairement invalide) pour ne pas bloquer l'utilisateur qui tape ou
+    // efface un chiffre. La validation stricte se fait au blur (validerQuantite).
+    const modifierQuantite = (idProduit, rawValue) => {
         setLignes((prev) =>
             prev.map((l) => {
                 if (l.idProduit !== idProduit) return l;
-                const nouvelleQuantite = Math.max(1, Math.min(quantite, l.stockDisponible + l.quantite));
-                return { ...l, quantite: nouvelleQuantite };
+
+                if (rawValue === "") {
+                    return { ...l, quantite: "" };
+                }
+
+                const n = parseInt(rawValue, 10);
+                if (isNaN(n)) return l;
+
+                return { ...l, quantite: n };
+            })
+        );
+    };
+
+    // Validation/clamp de la quantité quand l'utilisateur quitte le champ
+    // (ou après un clic sur les flèches, qui déclenchent aussi onChange puis onBlur au besoin).
+    const validerQuantite = (idProduit) => {
+        setLignes((prev) =>
+            prev.map((l) => {
+                if (l.idProduit !== idProduit) return l;
+
+                let n = typeof l.quantite === "number" ? l.quantite : parseInt(l.quantite, 10);
+                if (isNaN(n)) n = 1;
+
+                const max = l.stockMax ?? n;
+                const clamped = Math.max(1, Math.min(n, max));
+
+                if (clamped !== n && !isNaN(n) && n > max) {
+                    toast.warning(`Stock maximum atteint pour ${l.nom} (${max})`);
+                }
+
+                return { ...l, quantite: clamped };
             })
         );
     };
@@ -161,7 +192,7 @@ const AddDetailsVente = () => {
     };
 
     const montantTotal = lignes.reduce(
-        (acc, l) => acc + l.prixUnitaireVente * l.quantite, 0
+        (acc, l) => acc + l.prixUnitaireVente * (Number(l.quantite) || 0), 0
     );
 
     const handleEnregistrerClick = () => {
@@ -169,6 +200,15 @@ const AddDetailsVente = () => {
             toast.error("Ajoute au moins un produit avant d'enregistrer.");
             return;
         }
+        // Sécurité : on s'assure qu'aucune ligne n'a une quantité vide/invalide avant validation
+        setLignes((prev) =>
+            prev.map((l) => {
+                let n = typeof l.quantite === "number" ? l.quantite : parseInt(l.quantite, 10);
+                if (isNaN(n)) n = 1;
+                const max = l.stockMax ?? n;
+                return { ...l, quantite: Math.max(1, Math.min(n, max)) };
+            })
+        );
         setShowClientModal(true);
     };
 
@@ -199,18 +239,17 @@ const AddDetailsVente = () => {
                             prixAchat: l.prixAchat,
                             prixVente: l.prixUnitaireVente,
                             stockInitial: l.stockInitial,
-                            quantiteVendu: l.quantite,
+                            quantiteVendu: Number(l.quantite) || 1,
                         };
                     }
                     return {
                         idProduit: l.idProduit,
-                        quantiteVendu: l.quantite,
+                        quantiteVendu: Number(l.quantite) || 1,
                     };
                 }),
             };
             await createVente(dto);
             toast.success("Vente enregistrée avec succès");
-            await refreshBadges();
             navigate("/ventes");
             setLignes([]);
             setClientPrenom("");
@@ -314,15 +353,16 @@ const AddDetailsVente = () => {
                                                         <input
                                                             type="number"
                                                             min="1"
-                                                            max={ligne.stockDisponible + ligne.quantite}
+                                                            max={ligne.stockMax}
                                                             className="form-control form-control-sm"
                                                             value={ligne.quantite}
-                                                            onChange={(e) => modifierQuantite(ligne.idProduit, parseInt(e.target.value, 10) || 1)}
+                                                            onChange={(e) => modifierQuantite(ligne.idProduit, e.target.value)}
+                                                            onBlur={() => validerQuantite(ligne.idProduit)}
                                                         />
                                                     </td>
                                                     <td>{ligne.prixUnitaireVente?.toLocaleString()} FCFA</td>
                                                     <td className="text-success fw-semibold">
-                                                        {(ligne.prixUnitaireVente * ligne.quantite).toLocaleString()} FCFA
+                                                        {(ligne.prixUnitaireVente * (Number(ligne.quantite) || 0)).toLocaleString()} FCFA
                                                     </td>
                                                     <td className="text-center">
                                                         <button className="btn btn-sm btn-outline-danger" onClick={() => supprimerLigne(ligne.idProduit)}>
