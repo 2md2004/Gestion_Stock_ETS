@@ -156,10 +156,8 @@ public class AuthController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).build();
         }
-
         Utilisateur utilisateur = utilisateurService.getUtilisateurByEmail(authentication.getName())
                 .orElseThrow();
-
         LoginResponse loginResponse = new LoginResponse(
                 utilisateur.getId(),
                 utilisateur.getNom(),
@@ -167,7 +165,6 @@ public class AuthController {
                 utilisateur.getEmail(),
                 utilisateur.getRole().name()
         );
-
         return ResponseEntity.ok(loginResponse);
     }
 }

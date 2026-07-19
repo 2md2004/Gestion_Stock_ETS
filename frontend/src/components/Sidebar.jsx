@@ -13,7 +13,7 @@ const MenuTitle = ({ children }) => (
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate()
   const { stockFaible } = useBadges()
-
+   const userRole = sessionStorage.getItem('userRole');
   const handleLogout = () => {
     sessionStorage.removeItem('token')
     navigate('/login')
@@ -127,6 +127,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         <MenuTitle>ADMINISTRATION</MenuTitle>
 
+        {userRole !== 'GERANT' && ( 
         <NavLink
           to="/gerants"
           onClick={handleLinkClick}
@@ -137,6 +138,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           <i className="bi bi-people-fill sidebarIcon"></i>
           Gérants
         </NavLink>
+      )}
 
         <NavLink
           to="/infos-boutique"
