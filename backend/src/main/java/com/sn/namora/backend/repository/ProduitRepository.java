@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,17 @@ public interface ProduitRepository extends JpaRepository<Produit, String> {
     List<Produit> findByNomContaining(String nom);
     @Query("SELECT SUM(p.prixAchat * p.quantite) FROM Produit p")
     Double calculerValeurStock();
+    @Query(value = """
+            SELECT p.id, p.nom, COALESCE(SUM(dv.quantite_vendu), 0) as totalVendu
+            FROM produit p
+            JOIN details_vente dv ON p.id = dv.produit_id
+            JOIN vente v ON dv.vente_id = v.id
+            WHERE DATE(v.date) = :date
+            GROUP BY p.id, p.nom
+            ORDER BY totalVendu DESC
+            LIMIT 1
+    """, nativeQuery = true)
+    List<Object[]> getProduitPlusVenduJour(@Param("date") LocalDate date);
     @Query(value = """
             SELECT p.id, p.nom, SUM(dv.quantite_vendu) as totalVendu
             FROM produit p

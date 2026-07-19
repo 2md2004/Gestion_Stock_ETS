@@ -5,3 +5,6 @@ export const URL_CATEGORIE = API_URL + "categories"
 export const URL_PRODUIT = API_URL + "produits"
 export const URL_FORGOT_PASSWORD = API_URL + "forgot-password";
 export const URL_RESET_PASSWORD = API_URL + "reset-password"
+export const URL_CHANGE_PASSWORD = API_URL + "change-password"
+export const URL_ME = API_URL + "me"
+export const URL_REFRESH_TOKEN = API_URL + "refresh-token"

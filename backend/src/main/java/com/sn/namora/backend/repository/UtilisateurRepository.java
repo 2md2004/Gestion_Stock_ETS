@@ -13,4 +13,6 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, String
     Optional<Utilisateur> findByTelephone(String telephone);
     List<Utilisateur> findByRole(Role role);
     List<Utilisateur> findByEtat(Etat etat);
+
+
 }

@@ -51,7 +51,7 @@ const ForgotPassword = () => {
           <div className="text-center">
             <p className="small text-muted mb-1">Version 1.0.0</p>
             <p className="small text-muted mb-0">
-              © 2026 ETS Beug Serigne Mansour Sy - Tous droits réservés
+              © 2026 Namora GROUP - Tous droits réservés
             </p>
           </div>
         </div>

@@ -34,4 +34,5 @@ public class Utilisateur {
     @Enumerated(EnumType.STRING)
     private Sexe sexe;
     private LocalDate dateDeCreation;
+
 }

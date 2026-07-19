@@ -20,7 +20,6 @@ public class VenteController {
 
     private final VenteService venteService;
 
-    // Création d'une vente avec ses détails
     @PostMapping
     public ResponseEntity<Vente> addVente(@RequestBody VenteRequest vente) {
         return new ResponseEntity<>(

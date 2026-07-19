@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { jwtDecode } from 'jwt-decode'
 import logo from '../assets/logo_EBS.png'
 import { URL_LOGIN } from '../constants/server'
+import api from '../services/api'
 
 const LoginForm = () => {
   const [email, setEmail] = useState('')
@@ -12,41 +12,83 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
     if (!email || !password) {
       setError('Veuillez remplir tous les champs')
       return
     }
+    
     setError('')
     setLoading(true)
 
     try {
-      const response = await fetch(URL_LOGIN, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, motDePasse: password })
+      const response = await api.post(URL_LOGIN, {
+        email: email,
+        motDePasse: password
       })
 
-      if (!response.ok) {
-        const data = await response.json().catch(() => null)
-        setError(data?.message || 'Email ou mot de passe incorrect')
-        return
+      if (response.status === 200) {
+        const data = response.data
+        
+        console.log('📦 Données reçues:', data)
+        
+        // ✅ Stockage des données utilisateur (avec 'id' au lieu de 'userId')
+        if (data.id) {
+          sessionStorage.setItem('userId', data.id)  // On stocke 'id' sous 'userId'
+          console.log('✅ userId stocké:', data.id)
+        } else {
+          console.warn('⚠️ id non reçu du backend')
+          setError('Erreur: Identifiant utilisateur manquant')
+          setLoading(false)
+          return
+        }
+        
+        if (data.nom) {
+          sessionStorage.setItem('userNom', data.nom)
+        }
+        if (data.prenom) {
+          sessionStorage.setItem('userPrenom', data.prenom)
+        }
+        if (data.role) {
+          sessionStorage.setItem('userRole', data.role)
+        }
+        if (data.email) {
+          sessionStorage.setItem('userEmail', data.email)
+        }
+        
+        console.log('✅ Données stockées:', {
+          userId: sessionStorage.getItem('userId'),
+          nom: sessionStorage.getItem('userNom'),
+          prenom: sessionStorage.getItem('userPrenom'),
+          role: sessionStorage.getItem('userRole'),
+          email: sessionStorage.getItem('userEmail')
+        })
+        
+        // ✅ Redirection
+        navigate('/dashboard')
       }
 
-      const data = await response.json()
-      if (data.accessToken) {
-        sessionStorage.setItem('token', data.accessToken)
-
-        const decoded = jwtDecode(data.accessToken)
-        sessionStorage.setItem('userId', decoded.id)
-        sessionStorage.setItem('userNom', decoded.nom)
-        sessionStorage.setItem('userPrenom', decoded.prenom)
-        sessionStorage.setItem('userRole', decoded.role)
+    } catch (error) {
+      console.error('❌ Erreur:', error)
+      
+      if (error.response) {
+        const status = error.response.status
+        
+        if (status === 401) {
+          setError('Email ou mot de passe incorrect')
+        } else if (status === 403) {
+          setError('Compte désactivé, veuillez contacter l\'administrateur')
+        } else {
+          setError(error.response.data?.message || 'Une erreur est survenue')
+        }
+      } else if (error.request) {
+        setError('Impossible de contacter le serveur')
+      } else {
+        setError('Une erreur est survenue')
       }
-      navigate('/dashboard')
-    } catch (err) {
-      setError('Impossible de contacter le serveur')
     } finally {
       setLoading(false)
     }
@@ -84,6 +126,7 @@ const LoginForm = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="votre@email.com"
             disabled={loading}
+            autoComplete="email"
           />
         </div>
 
@@ -97,6 +140,7 @@ const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               disabled={loading}
+              autoComplete="current-password"
             />
             <button
               type="button"
@@ -104,6 +148,7 @@ const LoginForm = () => {
               onClick={() => setShowPassword(!showPassword)}
               disabled={loading}
               tabIndex={-1}
+              aria-label="Afficher/masquer le mot de passe"
             >
               <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
             </button>
@@ -123,14 +168,22 @@ const LoginForm = () => {
           </a>
         </div>
 
-        <button type="submit" className="btn btn-brand w-100 py-2 fw-semibold" disabled={loading}>
+        <button 
+          type="submit" 
+          className="btn btn-brand w-100 py-2 fw-semibold" 
+          disabled={loading}
+        >
           {loading ? (
-            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Connexion en cours...
+            </>
           ) : (
             'Se connecter'
           )}
         </button>
       </form>
+
     </div>
   )
 }

@@ -14,15 +14,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
 
-
+    @ExceptionHandler(UtilitisateurNotActifException.class)
+    public ResponseEntity<ErrorResponse> utilisateurNotFoundException(UtilitisateurNotActifException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(),e.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(UtilisateurNotFoundException.class)
     public ResponseEntity<ErrorResponse> utilisateurNotFoundException(UtilisateurNotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),e.getMessage());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
-
-
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> emailAlreadyExistException(EmailAlreadyExistsException e) {

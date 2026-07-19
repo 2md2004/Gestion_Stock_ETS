@@ -1,5 +1,6 @@
 package com.sn.namora.backend.service;
 
+import com.sn.namora.backend.dto.request.ChangePasswordRequest;
 import com.sn.namora.backend.enums.Etat;
 import com.sn.namora.backend.enums.Role;
 import com.sn.namora.backend.exceptions.EmailAlreadyExistsException;
@@ -39,6 +40,13 @@ public class UtilisateurService {
         Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findById(id);
         if  (utilisateurOptional.isPresent()) {
             return utilisateurRepository.findById(id);
+        }
+        else throw new UtilisateurNotFoundException("Utilisateur introuvable");
+    }
+    public Optional<Utilisateur> getUtilisateurByEmail(String email) {
+        Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findByEmail(email);
+        if  (utilisateurOptional.isPresent()) {
+            return utilisateurRepository.findByEmail(email);
         }
         else throw new UtilisateurNotFoundException("Utilisateur introuvable");
     }
@@ -108,16 +116,17 @@ public class UtilisateurService {
         else throw new UtilisateurNotFoundException("Utilisateur introuvable");
     }
 
-    public void changePassword(String idUtilisateur,String oldPassword, String newPassword) {
-        Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findById(idUtilisateur);
+    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findById(changePasswordRequest.getIdUtilisateur());
         if (utilisateurOptional.isPresent()) {
             Utilisateur old = utilisateurOptional.get();
-            if (!bCryptPasswordEncoder.matches(oldPassword,old.getMotDePasse())) throw new IncorrectPasswordException("Mot de passe incorrect");
-            old.setMotDePasse(bCryptPasswordEncoder.encode(newPassword));
+            if (!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(),old.getMotDePasse())) throw new IncorrectPasswordException("Mot de passe incorrect");
+            old.setMotDePasse(bCryptPasswordEncoder.encode(changePasswordRequest.getNewPassword()));
             utilisateurRepository.save(old);
         }
         else throw new UtilisateurNotFoundException("Utilisateur introuvable");
     }
+
 
 
 }

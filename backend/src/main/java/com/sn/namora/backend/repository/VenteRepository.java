@@ -29,7 +29,14 @@ public interface VenteRepository extends JpaRepository<Vente, String> {
 
     @Query("SELECT COUNT(v) FROM Vente v WHERE v.date = :date")
     int getNbreVentesDuJour(@Param("date") LocalDate date);
-
+    @Query("""
+            SELECT COALESCE(SUM(dv.quantiteVendu * (p.prixVente - p.prixAchat)), 0)
+            FROM Vente v
+            JOIN v.details dv
+            JOIN dv.produit p
+            WHERE v.date = :date
+    """)
+    BigDecimal getBeneficeJour(@Param("date") LocalDate date);
     @Query("""
             SELECT COALESCE(SUM(dv.quantiteVendu * (p.prixVente - p.prixAchat)), 0)
             FROM Vente v

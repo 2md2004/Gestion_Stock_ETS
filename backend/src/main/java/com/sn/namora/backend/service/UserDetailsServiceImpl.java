@@ -1,5 +1,8 @@
 package com.sn.namora.backend.service;
 
+import com.sn.namora.backend.enums.Etat;
+import com.sn.namora.backend.exceptions.UtilisateurNotFoundException;
+import com.sn.namora.backend.exceptions.UtilitisateurNotActifException;
 import com.sn.namora.backend.model.Utilisateur;
 import com.sn.namora.backend.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findByEmail(email);
         if (utilisateurOptional.isPresent()) {
+            Utilisateur utilisateur = utilisateurOptional.get();
+            if (utilisateur.getEtat() != Etat.ACTIF) {
+                throw new UtilitisateurNotActifException("Compte non actif, veuillez contacter l'administrateur");
+            }
             return User
                     .builder()
                     .username(utilisateurOptional.get().getEmail())
@@ -27,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     .build();
         }
         else  {
-            throw new UsernameNotFoundException("User not found");
+            throw new UtilisateurNotFoundException("Utilisateur introuvable");
         }
     }
 }
