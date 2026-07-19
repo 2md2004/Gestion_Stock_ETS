@@ -145,11 +145,11 @@ public class AuthController {
         return ResponseEntity.ok("Mot de passe changé");
     }
 
-    @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
-        utilisateurService.changePassword(changePasswordRequest);
-        return ResponseEntity.ok("Mot de passe changé");
-    }
+//    @PostMapping("/change-password")
+//    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+//        utilisateurService.changePassword(changePasswordRequest);
+//        return ResponseEntity.ok("Mot de passe changé");
+//    }
 
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication authentication) {

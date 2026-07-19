@@ -66,14 +66,13 @@ api.interceptors.response.use(
                 const refreshResponse = await api.post('refresh-token');
                 console.log('✅ /refresh-token réussi:', refreshResponse.status);
                 processQueue(null);
-                console.log('▶️ Requête originale rejouée:', originalRequest.url);
+               
                 return api(originalRequest);
             } catch (refreshError) {
-                console.log('❌ /refresh-token a échoué:', refreshError.response?.status, refreshError.response?.data);
+                
                 processQueue(refreshError);
                 sessionStorage.clear();
                 if (window.location.pathname !== '/login') {
-                    console.log('➡️ Redirection vers /login');
                     window.location.href = '/login';
                 }
                 return Promise.reject(refreshError);
@@ -81,9 +80,6 @@ api.interceptors.response.use(
                 isRefreshing = false;
             }
         }
-
-        // ❌ SUPPRIMÉ : l'ancien bloc "if (status === 403) { redirection directe }"
-        // Il est remplacé par la logique ci-dessus qui tente maintenant un refresh avant de rediriger
 
         return Promise.reject(error);
     }

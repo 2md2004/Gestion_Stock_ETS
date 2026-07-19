@@ -279,7 +279,7 @@ const Produit = () => {
                                                 {resultats.map((produit) => (
                                                     <tr key={produit.id} className="border-bottom">
                                                         <td className="ps-4">{produit.nom}</td>
-                                                        <td>{produit.description}</td>
+                                                        <td>{produit.description || "Non spécifiée"}</td>
                                                         <td>{produit.prixAchat} FCFA</td>
                                                         <td>{produit.prixVente} FCFA</td>
                                                         <td>{produit.categorie?.nom || 'N/A'}</td>
@@ -434,7 +434,7 @@ const Produit = () => {
                                                     {produits.map((produit) => (
                                                         <tr key={produit.id} className="border-bottom">
                                                             <td className="ps-4">{produit.nom}</td>
-                                                            <td>{produit.description}</td>
+                                                            <td>{produit.description || "Non Spécifiée"}</td>
                                                             <td>{produit.prixAchat} FCFA</td>
                                                             <td>{produit.prixVente} FCFA</td>
                                                             <td>{produit.categorie?.nom || 'N/A'}</td>

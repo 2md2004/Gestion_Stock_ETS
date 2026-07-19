@@ -221,7 +221,7 @@ const Categorie = () => {
                         <tr key={categorie.id} className="border-bottom">
                           <td className="ps-4">{categorie.id}</td>
                           <td>{categorie.nom}</td>
-                          <td>{categorie.description}</td>
+                          <td>{categorie.description || "Non specifiée"}</td>
                           <td className="text-center">
                             <div className="d-flex justify-content-center gap-1">
                               <button
