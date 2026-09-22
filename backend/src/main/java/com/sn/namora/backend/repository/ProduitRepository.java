@@ -20,7 +20,7 @@ public interface ProduitRepository extends JpaRepository<Produit, String> {
     Page<Produit> findAll(Pageable pageable);
     @Query("SELECT COUNT(p) FROM Produit p WHERE p.quantite <= 5")
     int nbreStockFaible(int quantite);
-
+    Page<Produit> findByCategorieId(Long categorieId, Pageable pageable);
     Page<Produit> findByQuantiteLessThanEqual(int quantite, Pageable pageable);
 
     List<Produit> findByNomContaining(String nom);

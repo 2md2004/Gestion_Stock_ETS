@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DetailsVenteResponse {
     private String produitId;
-    private String nomProdui;
+    private String nomProduit;
     private int quantiteVendu;
     private int prixUnitaireVente;
     private int total;

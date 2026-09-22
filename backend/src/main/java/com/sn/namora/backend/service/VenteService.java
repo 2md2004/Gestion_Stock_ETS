@@ -4,7 +4,9 @@ import com.sn.namora.backend.dto.PointRapport;
 import com.sn.namora.backend.dto.RapportVenteResponse;
 import com.sn.namora.backend.dto.request.DetailsVenteRequest;
 import com.sn.namora.backend.dto.request.VenteRequest;
+import com.sn.namora.backend.dto.response.VenteResponse;
 import com.sn.namora.backend.exceptions.VenteNotFoundException;
+import com.sn.namora.backend.mapper.VenteMapper;
 import com.sn.namora.backend.model.Client;
 import com.sn.namora.backend.model.DetailsVente;
 import com.sn.namora.backend.model.Produit;
@@ -15,10 +17,7 @@ import com.sn.namora.backend.repository.ProduitRepository;
 import com.sn.namora.backend.repository.VenteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -36,6 +35,7 @@ public class VenteService {
     private final DetailsVenteService detailsVenteService;
     private final DetailsVenteRepository detailsVenteRepository;
     private final ClientRepository clientRepository;
+    private final VenteMapper venteMapper;
     public Vente createVente(){
         Vente vente = new Vente();
         vente.setId(generateId());
@@ -123,17 +123,56 @@ public class VenteService {
         }
         return ids;
     }
-    public Optional<Vente> findById(String id){
-        Optional<Vente> venteOptional = venteRepository.findById(id);
-        if (venteOptional.isPresent()){
-            return venteRepository.findById(id);
-        }
-        else throw new VenteNotFoundException("Vente introuvable");
-    }
+//    public Optional<Vente> findById(String id){
+//        Optional<Vente> venteOptional = venteRepository.findById(id);
+//        if (venteOptional.isPresent()){
+//            return venteRepository.findById(id);
+//        }
+//        else throw new VenteNotFoundException("Vente introuvable");
+//    }
     public Page<Vente> findAllVentes(int page, int size, String sortBy){
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return venteRepository.findAll(pageable);
     }
+    public VenteResponse findById(String id) {
+        Optional<Vente> venteOptional = venteRepository.findById(id);
+
+        if (venteOptional.isPresent()) {
+            return venteMapper.toDto(venteOptional.get());
+        } else {
+            throw new VenteNotFoundException("Vente introuvable");
+        }
+    }
+    public List<VenteResponse> rechercherVentes(String query) {
+        List<Vente> ventes = venteRepository.rechercherVentes(query);
+        List<VenteResponse> dtos = new ArrayList<>();
+        for (Vente vente : ventes) {
+            dtos.add(venteMapper.toDto(vente));
+        }
+        return dtos;
+    }
+
+    public Page<VenteResponse> findAllVentes(int page, int size, String sortBy,
+                                             LocalDate debut, LocalDate fin) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+
+        Page<Vente> ventes;
+        if (debut != null && fin != null) {
+            ventes = venteRepository.findByDateBetween(debut, fin, pageable);
+        } else if (debut != null) {
+            ventes = venteRepository.findByDate(debut, pageable);
+        } else {
+            ventes = venteRepository.findAll(pageable);
+        }
+
+        List<VenteResponse> dtos = new ArrayList<>();
+        for (Vente vente : ventes.getContent()) {
+            dtos.add(venteMapper.toDto(vente));
+        }
+
+        return new PageImpl<>(dtos, pageable, ventes.getTotalElements());
+    }
+
 
     public List<Vente> findByDate(LocalDate date){
         return venteRepository.findByDate(date);

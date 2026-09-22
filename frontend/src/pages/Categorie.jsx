@@ -177,7 +177,7 @@ const Categorie = () => {
             </div>
           </div>
         </div>
-
+        
         <div className="col-md-12 mt-3 shadow-sm bg-white p-0" style={{ borderRadius: "10px" }}>
           {loading ? (
             <div

@@ -6,6 +6,7 @@ import com.sn.namora.backend.model.ResetToken;
 import com.sn.namora.backend.model.Utilisateur;
 import com.sn.namora.backend.repository.ResetTokenRepository;
 import com.sn.namora.backend.repository.UtilisateurRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,10 @@ public class ResetTokenService {
     private final ResetTokenRepository resetTokenRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final EmailService emailService;
 
     @Transactional
-    public void forgotPassword(String email) {
+    public void forgotPassword(String email) throws MessagingException {
         Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findByEmail(email);
 
         if (utilisateurOptional.isPresent()) {
@@ -41,6 +43,7 @@ public class ResetTokenService {
 
             String lien = "http://localhost:5173/reinitialiser-mot-de-passe?token=" + resetToken.getToken();
             System.out.println(lien);
+            emailService.sendResetPasswordEmail(utilisateur.getEmail(),utilisateur.getPrenom() +" "+utilisateur.getNom(),lien);
         }
     }
 

@@ -48,6 +48,14 @@ public class ProduitService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         return produitRepository.findAll(pageable);
     }
+    public Page<Produit> findAllProduits(int page, int size, String sortBy, Long categorieId) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+
+        if (categorieId != null ) {
+            return produitRepository.findByCategorieId(categorieId, pageable);
+        }
+        return produitRepository.findAll(pageable);
+    }
 
     public Produit update(String id, ProduitRequest request) {
 

@@ -1,67 +1,69 @@
-import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import '../styles/Topbar.css'
-import { useBadges } from '../context/BadgeContext'
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/Topbar.css";
+import { useBadges } from "../context/BadgeContext";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
 
 const notifIcons = {
-  danger: 'bi-exclamation-circle-fill text-danger',
-  success: 'bi-check-circle-fill text-success',
-  warning: 'bi-info-circle-fill text-warning',
-}
+  danger: "bi-exclamation-circle-fill text-danger",
+  success: "bi-check-circle-fill text-success",
+  warning: "bi-info-circle-fill text-warning",
+};
 
-const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [notifOpen, setNotifOpen] = useState(false)
-  const { notifs, notifSeen, setNotifSeen } = useBadges()
-  const menuRef = useRef(null)
-  const notifRef = useRef(null)
-  const navigate = useNavigate()
+const Topbar = ({ title = "Tableau de bord", onToggleSidebar }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const { notifs, notifSeen, setNotifSeen } = useBadges();
+  const menuRef = useRef(null);
+  const notifRef = useRef(null);
+  const navigate = useNavigate();
+  const {user,logout} = useAuth();
 
-  const userNom = sessionStorage.getItem('userNom') || ''
-  const userPrenom = sessionStorage.getItem('userPrenom') || ''
-  const userName = `${userPrenom} ${userNom}`.trim() || 'Utilisateur'
-  const userRole = sessionStorage.getItem('userRole') || 'Gérant'
+  const userNom = user?.nom || "";
+  const userPrenom = user?.prenom || "";
+  const userName = `${userPrenom} ${userNom}`.trim() || "Utilisateur";
+  const userRole = user?.role|| "Gérant";
 
-  const handleLogout = () => {
-    sessionStorage.clear()
-    navigate('/login')
-  }
+  const handleLogout = async () => {
+    await logout();
+  };
 
   const goToProfile = () => {
-    setMenuOpen(false)
-    navigate('/profil')
-  }
+    setMenuOpen(false);
+    navigate("/profil");
+  };
 
   const goToChangePassword = () => {
-    setMenuOpen(false)
-    navigate('/modifier-mot-de-passe')
-  }
+    setMenuOpen(false);
+    navigate("/modifier-mot-de-passe");
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false)
+        setMenuOpen(false);
       }
       if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setNotifOpen(false)
+        setNotifOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const initials = userName
-    .split(' ')
+    .split(" ")
     .map((word) => word[0])
-    .join('')
+    .join("")
     .slice(0, 2)
-    .toUpperCase()
+    .toUpperCase();
 
-  const date = new Intl.DateTimeFormat('fr-FR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date())
+  const date = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
 
   return (
     <header className="topbar d-flex align-items-center justify-content-between gap-3 bg-white border-bottom px-3 px-md-4">
@@ -71,7 +73,9 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
         </button>
         <div className="d-flex flex-column flex-shrink-0">
           <h1 className="topbarTitle mb-0 fw-bold">{title}</h1>
-          <span className="topbarSubtitle text-secondary">Gestion de stock</span>
+          <span className="topbarSubtitle text-secondary">
+            Gestion de stock
+          </span>
         </div>
       </div>
 
@@ -84,8 +88,8 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
         <div className="notificationWrapper" ref={notifRef}>
           <button
             onClick={() => {
-              setNotifOpen(!notifOpen)
-              if (!notifOpen) setNotifSeen(true)
+              setNotifOpen(!notifOpen);
+              if (!notifOpen) setNotifSeen(true);
             }}
             className="notification position-relative border-0 rounded-3 bg-light d-flex align-items-center justify-content-center"
           >
@@ -101,7 +105,9 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
             <div className="notificationMenu">
               <div className="notificationHeader">
                 <span>Notifications</span>
-                <span className="notificationCount">{notifs.length} nouvelles</span>
+                <span className="notificationCount">
+                  {notifs.length} nouvelles
+                </span>
               </div>
 
               {notifs.map((n) => (
@@ -118,8 +124,8 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
               <div className="notificationFooter">
                 <button
                   onClick={() => {
-                    setNotifOpen(false)
-                    navigate('/notifications')
+                    setNotifOpen(false);
+                    navigate("/notifications");
                   }}
                 >
                   Voir toutes les notifications
@@ -143,7 +149,9 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
               <small className="text-secondary">{userRole}</small>
             </div>
 
-            <i className={`bi bi-chevron-down profileChevron ${menuOpen ? 'rotate' : ''}`}></i>
+            <i
+              className={`bi bi-chevron-down profileChevron ${menuOpen ? "rotate" : ""}`}
+            ></i>
           </button>
 
           {menuOpen && (
@@ -176,7 +184,7 @@ const Topbar = ({ title = 'Tableau de bord', onToggleSidebar }) => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Topbar
+export default Topbar;

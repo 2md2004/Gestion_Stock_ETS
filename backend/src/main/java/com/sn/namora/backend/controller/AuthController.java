@@ -5,13 +5,14 @@ import com.sn.namora.backend.dto.request.LoginRequest;
 import com.sn.namora.backend.dto.request.ForgotRequest;
 import com.sn.namora.backend.dto.request.ResetPasswordRequest;
 import com.sn.namora.backend.dto.response.LoginResponse;
+import com.sn.namora.backend.dto.response.UtilisateurResponse;
 import com.sn.namora.backend.exceptions.TokenExpiredException;
 import com.sn.namora.backend.model.RefreshToken;
-import com.sn.namora.backend.model.Utilisateur;
 import com.sn.namora.backend.service.JwtService;
 import com.sn.namora.backend.service.RefreshTokenService;
 import com.sn.namora.backend.service.ResetTokenService;
 import com.sn.namora.backend.service.UtilisateurService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final ResetTokenService resetTokenService;
     private final UtilisateurService utilisateurService;
-    private final RefreshTokenService refreshTokenService; // ✅ ajouté
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -41,8 +42,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getMotDePasse()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Utilisateur utilisateur = utilisateurService.getUtilisateurByEmail(loginRequest.getEmail())
-                .orElseThrow();
+        UtilisateurResponse utilisateur = utilisateurService.getUtilisateurByEmail(loginRequest.getEmail());
 
         String access_token = jwtService.getToken(loginRequest.getEmail());
 
@@ -59,7 +59,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken.getToken())
                 .httpOnly(true)
                 .secure(false)
-                .path("/refresh-token") // ✅ n'est envoyé que sur cette route
+                .path("/refresh-token")
                 .maxAge(Duration.ofDays(7))
                 .sameSite("Strict")
                 .build();
@@ -82,7 +82,6 @@ public class AuthController {
     public ResponseEntity<?> refreshToken(
             @CookieValue(name = "refresh_token", required = false) String token,
             HttpServletResponse response) {
-        System.out.println("Called method");
         if (token == null) {
             return ResponseEntity.status(401).body("Refresh token manquant");
         }
@@ -107,10 +106,11 @@ public class AuthController {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(Authentication authentication, HttpServletResponse response) {
         if (authentication != null && authentication.isAuthenticated()) {
-            refreshTokenService.revokeToken(authentication.getName()); // ✅ révoque sans recréer
+            refreshTokenService.revokeToken(authentication.getName());
         }
 
         ResponseCookie accessCookie = ResponseCookie.from("access_token", "")
@@ -134,7 +134,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody ForgotRequest forgotRequest) {
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotRequest forgotRequest) throws MessagingException {
         resetTokenService.forgotPassword(forgotRequest.getEmail());
         return ResponseEntity.ok("Un email de réinitialisation a été envoyé à cette adresse");
     }
@@ -156,8 +156,8 @@ public class AuthController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).build();
         }
-        Utilisateur utilisateur = utilisateurService.getUtilisateurByEmail(authentication.getName())
-                .orElseThrow();
+        UtilisateurResponse utilisateur = utilisateurService.getUtilisateurByEmail(authentication.getName());
+
         LoginResponse loginResponse = new LoginResponse(
                 utilisateur.getId(),
                 utilisateur.getNom(),

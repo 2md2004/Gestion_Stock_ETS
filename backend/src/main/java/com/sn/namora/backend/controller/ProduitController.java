@@ -26,9 +26,14 @@ public class ProduitController {
 
 
     @GetMapping
-    public ResponseEntity<Page<Produit>> findAllProduits(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "nom") String sortBy) {
-        return ResponseEntity.ok(produitService.findAllProduits(page, size, sortBy));
+    public ResponseEntity<Page<Produit>> findAllProduits(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "nom") String sortBy,
+            @RequestParam(required = false) Long categorieId) {
+        return ResponseEntity.ok(produitService.findAllProduits(page, size, sortBy, categorieId));
     }
+
     @GetMapping("/search")
     public ResponseEntity<List<Produit>> findByNomContaining(@RequestParam("q") String nom) {
         return new ResponseEntity<>(produitService.searchProduits(nom), HttpStatus.OK);

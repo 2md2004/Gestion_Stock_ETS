@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import logoEBS from "../assets/logo_EBS.png";
-import PayeImg from "../assets/paye.jpg";
+
 
 const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -129,9 +129,7 @@ const FactureVente = forwardRef(({ vente, boutique }, ref) => {
                         </div>
                     </div>
 
-                    <div className="flex-shrink-0">
-                        <img src={PayeImg} alt="payé" style={{ width: "150px", height: "auto" }} />
-                    </div>
+                  
                 </div>
             </div>
 

@@ -17,6 +17,17 @@ public interface VenteRepository extends JpaRepository<Vente, String> {
 
     List<Vente> findByDateBetween(LocalDate debut, LocalDate fin);
 
+    Page<Vente> findByDate(LocalDate date, Pageable pageable);
+    @Query("""
+    SELECT v FROM Vente v
+    LEFT JOIN v.client c
+    WHERE LOWER(v.id) LIKE LOWER(CONCAT('%', :q, '%'))
+       OR LOWER(c.nom) LIKE LOWER(CONCAT('%', :q, '%'))
+       OR LOWER(c.prenom) LIKE LOWER(CONCAT('%', :q, '%'))
+""")
+    List<Vente> rechercherVentes(@Param("q") String query);
+
+    Page<Vente> findByDateBetween(LocalDate debut, LocalDate fin, Pageable pageable);
     @Query("""
             SELECT MAX(SUBSTRING(v.id,9))
             FROM Vente v

@@ -280,40 +280,46 @@ const Dashboard = () => {
               </Link>
             ))}
 
-            {stats.produitPlusVenduMois && (
-              <div className="mt-3 p-3 bg-light rounded-3">
-                <small className="text-muted">
-                  <i className="bi bi-trophy me-1" style={{ color: '#FFD700' }}></i>
-                  Produit le plus vendu du mois
-                </small>
-                <div className="d-flex justify-content-between align-items-center mt-1">
-                  <strong>
-                    <i className="bi bi-box-seam me-2" style={{ color: '#002050' }}></i>
-                    {stats.produitPlusVenduMois.nom}
-                  </strong>
-                 
-                </div>
-              </div>
-            )}
+            {/* Produit le plus vendu du MOIS */}
+{stats.produitPlusVenduMois && (
+    <div className="mt-3 p-3 bg-light rounded-3">
+        <small className="text-muted">
+            <i className="bi bi-trophy me-1" style={{ color: '#FFD700' }}></i>
+            Produit le plus vendu du mois
+        </small>
+        <div className="d-flex justify-content-between align-items-center mt-1">
+            <strong>
+                <i className="bi bi-box-seam me-2" style={{ color: '#002050' }}></i>
+                {stats.produitPlusVenduMois.nom}
+            </strong>
+            <span className="text-success fw-semibold small">
+                <i className="bi bi-cart me-1"></i>
+                {stats.produitPlusVenduMois.quantite} unités
+            </span>
+        </div>
+    </div>
+)}
 
-            {stats.produitPlusVenduAnnee && stats.produitPlusVenduAnnee.id !== stats.produitPlusVenduMois?.id && (
-              <div className="mt-2 p-3 bg-light rounded-3">
-                <small className="text-muted">
-                  <i className="bi bi-trophy me-1" style={{ color: '#C0C0C0' }}></i>
-                  Produit le plus vendu de l'année
-                </small>
-                <div className="d-flex justify-content-between align-items-center mt-1">
-                  <strong>
+{/* Produit le plus vendu de l'ANNÉE */}
+{stats.produitPlusVenduAnnee &&
+    stats.produitPlusVenduAnnee.id !== stats.produitPlusVenduMois?.id && (
+        <div className="mt-2 p-3 bg-light rounded-3">
+            <small className="text-muted">
+                <i className="bi bi-trophy me-1" style={{ color: '#C0C0C0' }}></i>
+                Produit le plus vendu de l'année
+            </small>
+            <div className="d-flex justify-content-between align-items-center mt-1">
+                <strong>
                     <i className="bi bi-box-seam me-2" style={{ color: '#002050' }}></i>
                     {stats.produitPlusVenduAnnee.nom}
-                  </strong>
-                  <span className="badge bg-secondary">
+                </strong>
+                <span className="text-success fw-semibold small">
                     <i className="bi bi-cart me-1"></i>
                     {stats.produitPlusVenduAnnee.quantite} unités
-                  </span>
-                </div>
-              </div>
-            )}
+                </span>
+            </div>
+        </div>
+    )}
           </section>
         </div>
       </div>
