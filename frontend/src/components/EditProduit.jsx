@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCategories } from "../services/categorieService";
+import { getCategories } from "../services/CategorieService";
 
 function EditProduit({ onUpdate, produit }) {
     const [categories, setCategories] = useState([]);
