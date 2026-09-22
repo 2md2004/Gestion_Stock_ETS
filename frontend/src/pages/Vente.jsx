@@ -66,8 +66,7 @@ const Vente = () => {
       setIsSearching(true);
       const data = await rechercherVentes(query);
       setResultats(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
       setResultats([]);
     } finally {
       setIsSearching(false);
@@ -126,8 +125,7 @@ const Vente = () => {
       setVentes(data.content || []);
       setPages(data.totalPages || 0);
       setCurrentPage(page);
-    } catch (error) {
-      console.log(error);
+    } catch {
       setVentes([]);
     } finally {
       setLoading(false);
@@ -172,8 +170,7 @@ const Vente = () => {
           `facture-vente-${exportVente.id}.pdf`,
         );
         toast.success("PDF téléchargé avec succès");
-      } catch (error) {
-        console.error("Erreur export PDF:", error);
+      } catch {
         toast.error("Erreur lors de la génération du PDF");
       } finally {
         setExportVente(null);
@@ -216,8 +213,7 @@ const Vente = () => {
       setExportLoadingId(vente.id);
       const detail = await getVenteById(vente.id);
       setExportVente(detail);
-    } catch (error) {
-      console.error("Erreur export PDF:", error);
+    } catch {
       toast.error("Erreur lors de la génération du PDF");
       setExportLoadingId(null);
     }

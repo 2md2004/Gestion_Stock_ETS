@@ -31,13 +31,10 @@ const LoginForm = () => {
       });
 
       if (response.status === 200) {
-        const data = response.data;
         await checkAuth();
-        console.log("📦 Données reçues:", data);
         navigate("/dashboard");
       }
     } catch (error) {
-      console.error("❌ Erreur:", error);
       if (error.response) {
         const status = error.response.status;
 

@@ -2,7 +2,6 @@ package com.sn.namora.backend.service;
 
 import com.sn.namora.backend.enums.Etat;
 import com.sn.namora.backend.exceptions.UtilisateurNotFoundException;
-import com.sn.namora.backend.exceptions.UtilitisateurNotActifException;
 import com.sn.namora.backend.model.Utilisateur;
 import com.sn.namora.backend.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +22,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findByEmail(email);
         if (utilisateurOptional.isPresent()) {
             Utilisateur utilisateur = utilisateurOptional.get();
-            if (utilisateur.getEtat() != Etat.ACTIF) {
-                throw new UtilitisateurNotActifException("Compte non actif, veuillez contacter l'administrateur");
-            }
             return User
                     .builder()
-                    .username(utilisateurOptional.get().getEmail())
-                    .password(utilisateurOptional.get().getMotDePasse())
-                    .roles(utilisateurOptional.get().getRole().toString())
+                    .username(utilisateur.getEmail())
+                    .password(utilisateur.getMotDePasse())
+                    .roles(utilisateur.getRole().toString())
+                    .disabled(utilisateur.getEtat() != Etat.ACTIF)
                     .build();
         }
         else  {

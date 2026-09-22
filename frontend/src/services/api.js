@@ -30,22 +30,13 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    console.log("⚠️ Erreur interceptée:", {
-      url: originalRequest?.url,
-      status: error.response?.status,
-      retry: originalRequest?._retry,
-      isPublic: isPublicPage(),
-    });
-
     // ✅ PAGE PUBLIQUE → on ne touche à rien
     if (isPublicPage()) {
-      console.log("📄 Page publique → rejet direct");
       return Promise.reject(error);
     }
 
     // ✅ Refresh token échoué → déconnexion
     if (originalRequest?.url?.includes("/refresh-token")) {
-      console.log("🔒 Refresh token échoué → déconnexion");
       window.location.href = "/login";
       return Promise.reject(error);
     }
@@ -58,14 +49,10 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
-      console.log("🔄 Tentative de refresh pour:", originalRequest.url);
-
       try {
         await api.post("/refresh-token");
-        console.log("✅ Refresh réussi");
         return api(originalRequest);
       } catch (refreshError) {
-        console.error("❌ Refresh échoué:", refreshError.message);
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }

@@ -82,8 +82,8 @@ const Notifications = () => {
         }
 
         setNotifications(newNotifs.slice(0, 5));
-      } catch (error) {
-        console.error("Erreur chargement notifications:", error);
+      } catch {
+        // Erreur ignorée, la liste reste vide
       } finally {
         setLoading(false);
       }

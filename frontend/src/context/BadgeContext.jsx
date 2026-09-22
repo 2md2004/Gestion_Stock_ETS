@@ -42,8 +42,8 @@ export const BadgeProvider = ({ children }) => {
 
       setNotifs(newNotifs.slice(0, 3))
       setNotifSeen(false)
-    } catch (error) {
-      console.error('Erreur chargement badges:', error)
+    } catch {
+      // Le chargement des badges échoue silencieusement
     }
   }, [])
 

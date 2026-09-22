@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
+import { useAuth } from '../context/AuthContext'
 import changePasswordImg from '../assets/change_password.png'
 import '../styles/Profile.css'
 import '../styles/Login.css'
 
 const ChangePassword = () => {
+  const { user } = useAuth()
   const [formData, setFormData] = useState({
     oldPassword: '',
     newPassword: '',
@@ -51,9 +53,12 @@ const ChangePassword = () => {
       setError('')
       setSuccess(false)
 
-      const userId = sessionStorage.getItem('userId')
+      if (!user?.id) {
+        setError("Utilisateur introuvable")
+        return
+      }
 
-      await api.put(`/gerants/${userId}/changer-mot-de-passe`, {
+      await api.put(`/gerants/${user.id}/changer-mot-de-passe`, {
         ancienMotDePasse: oldPassword,
         nouveauMotDePasse: newPassword
       })

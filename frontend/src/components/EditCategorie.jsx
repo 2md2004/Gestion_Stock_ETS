@@ -20,8 +20,7 @@ function EditCategorie({ onUpdate, categorie }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onUpdate(categorie.id, formData); 
-        console.log(formData);
+        onUpdate(categorie.id, formData);
     };
 
     return (

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import api from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import '../styles/Profile.css'
 
 const Profile = () => {
+  const { user } = useAuth()
   const [profile, setProfile] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -10,8 +12,11 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const userId = sessionStorage.getItem('userId')
-        const response = await api.get(`/gerants/${userId}`)
+        if (!user?.id) {
+          setError("Utilisateur introuvable")
+          return
+        }
+        const response = await api.get(`/gerants/${user.id}`)
         setProfile(response.data)
       } catch (error) {
         setError("Impossible de charger le profil")
@@ -21,7 +26,7 @@ const Profile = () => {
     }
 
     fetchProfile()
-  }, [])
+  }, [user?.id])
 
   if (loading) {
     return (

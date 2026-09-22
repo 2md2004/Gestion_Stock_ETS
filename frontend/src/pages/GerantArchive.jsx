@@ -31,9 +31,8 @@ const GerantArchive = () => {
             const data = await getGerants();
             setGerants(data);
             setFilteredGerants(data);
-            console.log(data);
-        } catch (error) {
-            console.error(error);
+        } catch {
+          // Erreur ignorée, on garde les données actuelles
         } finally {
             setLoading(false);
         }

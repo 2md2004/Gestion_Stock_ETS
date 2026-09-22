@@ -8,14 +8,11 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
-    console.log("🔍 checkAuth - Début");
     try {
       setLoading(true);
       const response = await api.get("/me");
-      console.log("✅ /me OK:", response.data);
       setUser(response.data);
-    } catch (error) {
-      console.log("🔒 /me KO:", error.response?.status || error.message);
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -23,11 +20,8 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    console.log("🚪 logout");
     try {
       await api.post("/logout");
-    } catch (error) {
-      console.error("❌ logout erreur:", error.message);
     } finally {
       setUser(null);
       setLoading(false);
@@ -37,7 +31,6 @@ export function AuthProvider({ children }) {
 
   // ✅ Appel TOUJOURS, peu importe la page
   useEffect(() => {
-    console.log("🔄 AuthProvider mount → checkAuth");
     checkAuth();
   }, []);
 

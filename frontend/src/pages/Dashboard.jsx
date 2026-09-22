@@ -38,9 +38,8 @@ const Dashboard = () => {
         setLoading(true);
         const data = await getStatitisques();
         setStats(data);
-        console.log('Stats:', data);
-      } catch (error) {
-        console.error("Erreur lors du chargement des statistiques:", error);
+      } catch {
+        // Erreur ignorée, les statistiques restent à 0
       } finally {
         setLoading(false);
       }

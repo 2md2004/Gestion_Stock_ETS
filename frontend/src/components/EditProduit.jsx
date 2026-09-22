@@ -16,7 +16,6 @@ function EditProduit({ onUpdate, produit }) {
         const fetchCategories = async () => {
             const data = await getCategories();
             setCategories(data);
-            console.log(data);
         };
         fetchCategories();
     }, []);
@@ -40,7 +39,6 @@ function EditProduit({ onUpdate, produit }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(formData);
         onUpdate(produit.id, formData);
     };
 

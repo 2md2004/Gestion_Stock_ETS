@@ -39,8 +39,8 @@ const InfosBoutique = () => {
           setLogoPreview(`${API_URL}images/${data.logoPath}`);
         }
       }
-    } catch (error) {
-      console.error("Erreur chargement boutique:", error);
+    } catch {
+      // Erreur ignorée, on garde les informations actuelles
     }
   };
 
@@ -86,8 +86,7 @@ const InfosBoutique = () => {
       toast.success("Informations de la boutique enregistrées");
       loadBoutique();
       setLogoFile(null);
-    } catch (error) {
-      console.error("Erreur sauvegarde:", error);
+    } catch {
       toast.error("Erreur lors de l'enregistrement");
     } finally {
       setLoading(false);

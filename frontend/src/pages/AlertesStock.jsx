@@ -29,8 +29,7 @@ const AlertesStock = () => {
             setProduits(data.content || []);
             setPages(data.totalPages || 0);
             setCurrentPage(page);
-        } catch (error) {
-            console.log(error);
+        } catch {
             setProduits([]);
         } finally {
             setLoading(false);
@@ -109,10 +108,9 @@ const AlertesStock = () => {
            setQuantite("");
            loadPage(currentPage);
            await refreshBadges();
-       } catch (error) {
-           console.error(error);
+} catch {
            toast.error("Erreur lors du réapprovisionnement");
-       } finally {
+        } finally {
            setSubmitting(false);
        }
    };

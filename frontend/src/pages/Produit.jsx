@@ -62,8 +62,7 @@ const Produit = () => {
       setIsSearching(true);
       const data = await rechercherProduits(query, categorieFilter || null);
       setResultats(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
       setResultats([]);
     } finally {
       setIsSearching(false);
@@ -74,8 +73,8 @@ const Produit = () => {
     try {
       const data = await getCategories();
       setCategories(data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Erreur ignorée, les catégories restent vides
     }
   };
 
@@ -137,8 +136,7 @@ const Produit = () => {
       setProduits(data.content || []);
       setPages(data.totalPages || 0);
       setCurrentPage(page);
-    } catch (error) {
-      console.log(error);
+    } catch {
       setProduits([]);
     } finally {
       setLoading(false);

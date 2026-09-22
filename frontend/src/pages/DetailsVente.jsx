@@ -23,8 +23,7 @@ const DetailsVente = () => {
             setLoading(true);
             const data = await getVenteById(id);
             setVente(data);
-        } catch (error) {
-            console.log(error);
+        } catch {
             toast.error("Erreur lors du chargement de la vente");
             setVente(null);
         } finally {
@@ -48,8 +47,7 @@ const DetailsVente = () => {
         try {
             await exporterElementEnPdf(factureRef.current, `facture-vente-${vente.id}.pdf`);
             toast.success("PDF téléchargé avec succès");
-        } catch (error) {
-            console.error("Erreur export PDF:", error);
+        } catch {
             toast.error("Erreur lors de la génération du PDF");
         } finally {
             setGenerationPdf(false);

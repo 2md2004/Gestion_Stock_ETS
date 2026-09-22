@@ -23,7 +23,6 @@ const ResetPassword = () => {
     const tokenFromUrl = queryParams.get('token')
     if (tokenFromUrl) {
       setToken(tokenFromUrl)
-      console.log('Token récupéré:', tokenFromUrl)
     } else {
       setError('Token manquant. Veuillez utiliser le lien envoyé par email.')
     }
@@ -71,7 +70,6 @@ const ResetPassword = () => {
       
       setTimeout(() => navigate('/login'), 3000)
     } catch(error) {
-      console.log(error.response?.data)
       setError(error.response?.data?.message || "Impossible de contacter le serveur")
     } finally {
       setLoading(false)

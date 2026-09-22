@@ -30,8 +30,7 @@ const Reapprovisionnement = () => {
       setProduits(data.content || []);
       setPages(data.totalPages || 0);
       setCurrentPage(page);
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error("Erreur lors du chargement des produits");
       setProduits([]);
     } finally {
@@ -133,8 +132,7 @@ const Reapprovisionnement = () => {
       // ✅ Optionnel: Forcer un rechargement après un délai
       // setRefreshTrigger(prev => prev + 1);
       
-    } catch (error) {
-      console.error("Erreur lors du réapprovisionnement:", error);
+    } catch {
       toast.error("Erreur lors du réapprovisionnement. Veuillez réessayer.");
       
       // ✅ En cas d'erreur, recharger pour être sûr d'avoir les bonnes données
@@ -142,8 +140,8 @@ const Reapprovisionnement = () => {
         try {
           const data = await rechercherProduits(search);
           setResultats(data);
-        } catch (e) {
-          console.error("Erreur lors du rechargement:", e);
+        } catch {
+          // Erreur ignorée, on garde les résultats actuels
         }
       } else {
         await loadPage(currentPage);

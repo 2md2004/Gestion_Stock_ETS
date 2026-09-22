@@ -66,8 +66,7 @@ const AddDetailsVente = () => {
             setIsSearching(true);
             const data = await rechercherProduits(query);
             setResultats(data);
-        } catch (error) {
-            console.log(error);
+        } catch {
             setResultats([]);
         } finally {
             setIsSearching(false);

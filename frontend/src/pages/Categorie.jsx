@@ -18,9 +18,8 @@ const Categorie = () => {
       const data = await getCategories();
       setCategories(data);
       setFilteredCategories(data);
-      console.log(data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Erreur ignorée, on garde les données actuelles
     } finally {
       setLoading(false);
     }

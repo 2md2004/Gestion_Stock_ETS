@@ -29,7 +29,6 @@ const ForgotPassword = () => {
       
       // setTimeout(() => navigate('/reinitialiser-mot-de-passe'), 3000)
     } catch(error) {
-      console.log(error.response?.data)
       setError(error.response?.data?.message || "Impossible de contacter le serveur")
     } finally {
       setLoading(false)

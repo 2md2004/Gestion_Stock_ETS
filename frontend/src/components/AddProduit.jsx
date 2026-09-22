@@ -16,7 +16,6 @@ function AddProduit({ onAdd }) {
         const fetchCategories = async () => {
             const data = await getCategories();
             setCategories(data);
-            console.log(data);
         };
 
         fetchCategories();
@@ -30,7 +29,6 @@ function AddProduit({ onAdd }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         onAdd(formData);
-        console.log(formData);
         setFormData({
             nom: "",
             description: "",
