@@ -339,7 +339,7 @@ const Gerant = () => {
                                                         </td>
                                                         <td>
                                                             <span className="text-capitalize">
-                                                                {gerant.sexe}
+                                                                {gerant.sexe?.toLowerCase()}
                                                             </span>
                                                         </td>
                                                         <td>
