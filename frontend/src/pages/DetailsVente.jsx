@@ -7,7 +7,7 @@ import { getVenteById } from "../services/VenteService";
 import { getBoutique } from "../services/BoutiqueService";
 import { API_URL } from "../constants/server";
 import FactureVente from "../components/FactureVente";
-import { exporterElementEnPdf, withLogoUrl } from "../utils/pdfExport";
+import { exporterElementEnPdf, withLogoUrl } from "../utils/PdfExport";
 
 const DetailsVente = () => {
     const { id } = useParams();

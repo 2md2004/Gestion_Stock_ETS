@@ -12,8 +12,8 @@ import { getBoutique } from "../services/BoutiqueService";
 import { API_URL } from "../constants/server";
 import useDebounce from "../hooks/useDebounce";
 import { useLocation, useNavigate } from "react-router-dom";
-import FactureVente from "../components/Facturevente";
-import { exporterElementEnPdf, withLogoUrl } from "../utils/pdfExport";
+import FactureVente from "../components/FactureVente";
+import { exporterElementEnPdf, withLogoUrl } from "../utils/PdfExport";
 
 const Vente = () => {
   const [ventes, setVentes] = useState([]);
